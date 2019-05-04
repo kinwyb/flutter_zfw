@@ -41,7 +41,7 @@ class HomeWidgetState extends State<HomeWidget> {
 
   Future loadData() async {
     if(!isEnd) {
-      var brands = await HomeAPI.brands(_page,2);
+      var brands = await HomeAPI.brands(_page);
       brands = brands ?? [];
       _page++;
       if(brands.length < 1) {

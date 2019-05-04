@@ -7,11 +7,16 @@ class NumInput extends StatefulWidget {
   FocusNode focusNode;
 
   Color backgroundColor;
+  NumInputState inputState = new NumInputState();
 
   int minNum = 0;
   int maxNum = 65535;
 
   String text;
+  void setText(String newText){
+    oldNum = int.parse(newText);
+    controller.text = newText;
+  }
 
   TextField textField;
 
@@ -59,7 +64,7 @@ class NumInput extends StatefulWidget {
   }
 
   @override
-  State<StatefulWidget> createState() => new NumInputState();
+  State<StatefulWidget> createState() => inputState;
 
   int getNum() {
     return int.parse(controller.text);
@@ -71,6 +76,10 @@ class NumInputState extends State<NumInput> {
   void dispose() {
     super.dispose();
     widget.controller.dispose();
+  }
+
+  void _update() {
+    setState(() {});
   }
 
   @override

@@ -18,6 +18,7 @@ class Activity extends StatefulWidget {
 
 class ActivityState extends State<Activity>
     with SingleTickerProviderStateMixin {
+      
   String activityCode;
 
   ActivityInfo info;

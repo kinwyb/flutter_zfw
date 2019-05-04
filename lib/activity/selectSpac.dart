@@ -3,6 +3,7 @@ import '../components/iconTitle.dart';
 import '../components/api/activity.dart';
 import '../components/input.dart';
 import './sku.dart';
+import 'dart:math';
 
 class ActivitySelectSpec extends StatefulWidget {
   ActivityInfo info;
@@ -37,8 +38,8 @@ class ActivitySelectSpec extends StatefulWidget {
 class ActivitySelectSpecState extends State<ActivitySelectSpec> {
   Map<String, int> resultValue = Map();
   Map<String, int> iconValue = Map();
-  int _stockNum = 0;
-  String skuID = "22";
+  int _stockNum;
+  String skuID;
   NumInput numInput;
   bool keyboard = false;
   final ScrollController _controller = ScrollController();
@@ -67,6 +68,7 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
       text: "0",
       backgroundColor: backgroundColor,
       focusNode: this._focusNode,
+      minNum: 0,
     );
   }
 
@@ -85,14 +87,17 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
           children: <Widget>[
             _buiTop(context),
             ActivitySKU(
-              key:globalKey,
-              sku:widget.skus,
+              key: globalKey,
+              sku: widget.skus,
               backgroundColor: widget.backgroundColor,
+              selectCallBack: _selectSKU,
             ),
             _buyNum(context),
             Buttom(
               onTap: () {
-                resultValue["dd"] = 2;
+                if (numInput.oldNum > 0 && this.skuID != null) {
+                  resultValue[this.skuID] = numInput.oldNum;
+                }
                 if (widget.callback != null) {
                   widget.callback(resultValue, widget.addShoppingCart);
                 }
@@ -106,7 +111,7 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
                     height: 50,
                     child: Text(
                       widget.text,
-                      style: TextStyle(fontSize: 18),
+                      style: TextStyle(fontSize: 18, color: Colors.white),
                     ))
               ],
             ),
@@ -243,4 +248,16 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
     );
   }
 
+  // 选中的SKU
+  void _selectSKU(String skuID, int stockNum) {
+    if (numInput.oldNum > 0 && this.skuID != null) {
+      resultValue[this.skuID] = numInput.oldNum;
+    }
+    _stockNum = stockNum;
+    this.skuID = skuID;
+    numInput?.setText(
+        resultValue[skuID] == null ? "0" : resultValue[skuID].toString());
+    numInput?.maxNum = stockNum; //设置加减最大值
+    setState(() {});
+  }
 }

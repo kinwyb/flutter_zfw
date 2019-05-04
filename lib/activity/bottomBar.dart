@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../components/api/activity.dart';
-import '../components/iconTitle.dart';
+import '../components/component.dart';
 import '../components/router/routers.dart';
 import './selectSpac.dart';
 
@@ -10,6 +10,7 @@ class ActivityBottomBar extends StatelessWidget {
   List<ActivityProductSKU> skus;
 
   var iconTextStyle = TextStyle(fontSize: 9.0);
+  final TextStyle _whiteColorTextStyle = textStyleColor(Colors.white);
 
   @override
   Widget build(BuildContext context) {
@@ -52,7 +53,7 @@ class ActivityBottomBar extends StatelessWidget {
         });
       },
       children: <Widget>[
-        Text('加入购物车')
+        Text('加入购物车',style: _whiteColorTextStyle)
       ],
     );
   }
@@ -71,7 +72,7 @@ class ActivityBottomBar extends StatelessWidget {
         });
       },
       children: <Widget>[
-        Text('直接购买')
+        Text('直接购买',style: _whiteColorTextStyle)
       ],
     );
   }

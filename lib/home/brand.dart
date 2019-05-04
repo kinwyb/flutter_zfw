@@ -131,7 +131,7 @@ class _brandProductDetail extends StatelessWidget {
     var width = MediaQuery.of(context).size.width;
     return new GestureDetector(
       onTap: () {
-        ActivityRouter.Navigate(context, this.product.ActivityCode);
+        activityNavigate(context, this.product.ActivityCode);
       },
       child: new Column(
         children: <Widget>[

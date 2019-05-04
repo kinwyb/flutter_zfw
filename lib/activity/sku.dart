@@ -82,7 +82,7 @@ class ActivitySKUState extends State<ActivitySKU> {
             //   _selectMap.remove(i);
             // }
             if(widget.selectCallBack != null && _selectMap[_maxLevel] != null) {
-              widget.selectCallBack(spec.skuID,0);
+              widget.selectCallBack(spec.skuID,spec.stockNum);
             }
             setState(() {});
           }
@@ -167,12 +167,14 @@ class _sku {
   String groupName;
   String skuID;
   String name;
+  int stockNum;
   List<_sku> children = [];
 
   _sku(ActivityProductSKU sku) {
     groupName = sku.SpacGroupName;
     skuID = sku.SkuID;
     name = sku.Name;
+    stockNum = sku.Store;
     if (sku.Values != null && sku.Values.length > 0) {
       for (var s in sku.Values) {
         children.add(_sku(s));

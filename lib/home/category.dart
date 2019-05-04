@@ -1,15 +1,13 @@
 import 'package:flutter/material.dart';
 import '../components/api/home.dart';
+import '../components/router/routers.dart';
 
 class HomeCategory extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() => new HomeCategoryState();
-  
 }
 
 class HomeCategoryState extends State<HomeCategory> {
-
   List<IndexCategory> categorys = new List<IndexCategory>();
 
   @override
@@ -28,10 +26,10 @@ class HomeCategoryState extends State<HomeCategory> {
   void _addMore() {
     if (this.categorys != null && this.categorys.length < 8) {
       this.categorys.add(IndexCategory.fromParams(
-          Img:
-              "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1556600825917&di=4058b10d1acaa57f5803b52f059db067&imgtype=0&src=http%3A%2F%2Fbpic.588ku.com%2Felement_origin_min_pic%2F00%2F92%2F44%2F0456f220df03182.jpg",
-          Name: "更多",
-      ));
+            Img:
+                "https://timgsa.baidu.com/timg?image&quality=80&size=b9999_10000&sec=1556600825917&di=4058b10d1acaa57f5803b52f059db067&imgtype=0&src=http%3A%2F%2Fbpic.588ku.com%2Felement_origin_min_pic%2F00%2F92%2F44%2F0456f220df03182.jpg",
+            Name: "更多",
+          ));
     }
   }
 
@@ -74,7 +72,7 @@ class _categoryIcon extends StatelessWidget {
         ],
       ),
       onTap: () {
-        print('点击:${this.category.Name}');
+        categoryNavigate(context, this.category.Name);
       },
     );
   }

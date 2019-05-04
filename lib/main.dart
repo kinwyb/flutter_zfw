@@ -29,8 +29,8 @@ class MyApp extends StatelessWidget {
       ),
       onGenerateRoute: router.generator,
       // home: MyHomePage(title: 'Flutter Demo Home Page'),
-      // home: new HomeWidget(),
-      home: Activity(activityCode: "c110d2ca40ca11e9941b00163e136d45",)
+      home: new HomeWidget(),
+      // home: Activity(activityCode: "c110d2ca40ca11e9941b00163e136d45",)
     );
   }
 }
