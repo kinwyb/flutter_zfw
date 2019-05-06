@@ -2,17 +2,14 @@ import 'package:flutter/material.dart';
 import '../components/api/activity.dart';
 
 class ActivitySKU extends StatefulWidget {
-  
   List<ActivityProductSKU> sku;
 
   Map<String, _sku> skuMap = {};
   List<_sku> skus = [];
   Color backgroundColor;
-  Function(String skuID,int stockNum) selectCallBack; //选择规格变化后回调
+  Function(String skuID, int stockNum) selectCallBack; //选择规格变化后回调
 
-  ActivitySKU({Key key, this.sku, 
-  this.backgroundColor,
-  this.selectCallBack})
+  ActivitySKU({Key key, this.sku, this.backgroundColor, this.selectCallBack})
       : assert(sku != null),
         super(key: key) {
     for (var s in sku) {
@@ -62,9 +59,12 @@ class ActivitySKUState extends State<ActivitySKU> {
       }
     }
     for (var spec in sku) {
-      if (first == "" && level == 1) {
+      if (spec.children.length < 1 && spec.skuID.isEmpty) {
+        // 没有子类而且没有skuid的规格不展示
+        continue;
+      }else if (first == "" && level == 1) {
         first = spec.name;
-      }
+      } 
       BoxDecoration decoration = _noSelectedDecoration;
       TextStyle textstyle = _noSelectedTextStyle;
       if ((_selectMap[level] == null && first == spec.name) ||
@@ -75,14 +75,17 @@ class ActivitySKUState extends State<ActivitySKU> {
       wgWrap.children.add(GestureDetector(
         onTap: () {
           // 规格选择变化了,重新渲染
-          if(_selectMap[level]?.toString() != spec.name) {
+          if (_selectMap[level]?.toString() != spec.name) {
             _selectMap[level] = spec.name;
             // 把下一级选择的全部取消掉
-            // for (var i = level+1; i <= _maxLevel; i++) { 
-            //   _selectMap.remove(i);
-            // }
-            if(widget.selectCallBack != null && _selectMap[_maxLevel] != null) {
-              widget.selectCallBack(spec.skuID,spec.stockNum);
+            for (var i = level + 1; i <= _maxLevel; i++) {
+              _selectMap.remove(i);
+            }
+            if (widget.selectCallBack != null &&
+                _selectMap[_maxLevel] != null) {
+              widget.selectCallBack(spec.skuID, spec.stockNum);
+            } else if (_selectMap[_maxLevel] == null) {
+              widget.selectCallBack(null, 0);
             }
             setState(() {});
           }
@@ -102,6 +105,10 @@ class ActivitySKUState extends State<ActivitySKU> {
         ),
       ));
       groupName = spec.groupName;
+    }
+    if (groupName == null) {
+      _maxLevel = level - 1;
+      return wgs;
     }
     var childs = _specValue(level: level + 1);
     // 规格组中间横线
@@ -172,7 +179,7 @@ class _sku {
 
   _sku(ActivityProductSKU sku) {
     groupName = sku.SpacGroupName;
-    skuID = sku.SkuID;
+    skuID = sku.SkuID ?? "";
     name = sku.Name;
     stockNum = sku.Store;
     if (sku.Values != null && sku.Values.length > 0) {

@@ -4,7 +4,7 @@ import './components/router/routers.dart';
 import './activity/main.dart';
 
 void main() {
-  Routers.init();
+  routerInit();
   runApp(MyApp());
 }
 

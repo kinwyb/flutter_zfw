@@ -1,52 +1,62 @@
 import 'package:flutter/material.dart';
+import '../components/router/routers.dart';
 
-class BottomNavigationBarUtil {
-  static const TextStyle _iconTitleTextStyle =
-      TextStyle(fontSize: 7.0);
+const TextStyle _iconTitleTextStyle = TextStyle(fontSize: 10.0);
 
-  static Widget wapped(BuildContext context, Widget wg) {
-    return Column(
-      children: <Widget>[
-        Container(
-          height: MediaQuery.of(context).size.height - 75,
-          child: wg,
+int _bottomNavigationIndex = 0;
+
+// 底部导航栏
+BottomNavigationBar bottomNavigationBar(BuildContext context) {
+  return BottomNavigationBar(
+    iconSize: 22.0,
+    fixedColor: Colors.black,
+    currentIndex: _bottomNavigationIndex,
+    onTap: (index) {
+      if (index == _bottomNavigationIndex) {
+        return;
+      }
+      _bottomNavigationIndex = index;
+      switch (index) {
+        case 1:
+          homeHeadNavigate(context);
+          break;
+        case 2:
+          shoppingCartNavigate(context);
+          break;
+        case 3:
+          memberNavigate(context);
+          break;
+        default:
+          homeNavigate(context);
+      }
+    },
+    items: [
+      BottomNavigationBarItem(
+        icon: Icon(
+          Icons.home,
         ),
-        Container(
-          height: 75.0,
-          child: BottomNavigationBar(
-            iconSize: 20.0,
-            fixedColor: Colors.black,
-            items: [
-              BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.home,
-                ),
-                title: Text('首页', style: _iconTitleTextStyle),
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.crop_original,
-                ),
-                title: Text('当家', style: _iconTitleTextStyle),
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.shopping_cart,
-                ),
-                title: Text('购物车', style: _iconTitleTextStyle),
-              ),
-              BottomNavigationBarItem(
-                icon: Icon(
-                  Icons.account_box,
-                ),
-                title: Text('会员', style: _iconTitleTextStyle),
-              ),
-            ],
-            //设置显示的模式
-            type: BottomNavigationBarType.fixed,
-          ),
+        title: Text('首页', style: _iconTitleTextStyle),
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(
+          Icons.crop_original,
         ),
-      ],
-    );
-  }
+        title: Text('当家', style: _iconTitleTextStyle),
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(
+          Icons.shopping_cart,
+        ),
+        title: Text('购物车', style: _iconTitleTextStyle),
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(
+          Icons.account_box,
+        ),
+        title: Text('会员', style: _iconTitleTextStyle),
+      ),
+    ],
+    //设置显示的模式
+    type: BottomNavigationBarType.fixed,
+  );
 }

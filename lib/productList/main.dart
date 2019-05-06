@@ -57,10 +57,10 @@ class ProductListState extends State<ProductList> {
     CategoryInfoResp info = await CategoryAPI.info(widget.categoryName, _page);
     if (info.page != null) {
       _maxLength = info.page.total;
-    } else if (info.data == null) {
-      isEnd = true;
     }
-    if (info.data.Activitys == null || info.data.Activitys.length < 1) {
+    if (info.data == null) {
+      isEnd = true;
+    }else if (info.data.Activitys == null || info.data.Activitys.length < 1) {
       isEnd = true;
     } else {
       for (var i in info.data.Activitys) {
@@ -103,9 +103,9 @@ class ProductListState extends State<ProductList> {
   Widget _item(BuildContext context, int index) {
     if (index >= products.length) {
       if (isEnd) {
-        return RefreshWidget.loadMoreEnd();
+        return noMoreWidget();
       } else {
-        return RefreshWidget.loadMore();
+        return loadMoreWidget();
       }
     } else {
       return new ProductCard(

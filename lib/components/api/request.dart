@@ -1,6 +1,30 @@
 import 'package:dio/dio.dart';
 import 'dart:async';
 import 'dart:convert';
+import './beans/login.dart';
+
+String _token = "";
+
+// 检测登入
+bool isLogin() {
+  return _token != "";
+}
+
+Future<LoginResp> login(String username, String password) async {
+  var data = await HttpUtils.request("/bdadmin/user/login",
+      method: HttpUtils.POST,
+      data: "{\"username\":\"${username}\",\"password\":\"${password}\"}");
+  LoginResp res = new LoginResp.fromJson(data);
+  if (res.code == 0 && res.data != null) {
+    setToken(res.data.token);
+  }
+  return res;
+}
+
+// 设置登入token
+void setToken(String token) {
+  _token = token;
+}
 
 /*
  * 封装 restful 请求
@@ -29,7 +53,8 @@ class HttpUtils {
   static const String DELETE = 'delete';
 
   /// request method
-  static Future<Map> request(String url, {data, method,Map<String,dynamic> queryParameters}) async {
+  static Future<Map> request(String url,
+      {data, method, Map<String, dynamic> queryParameters}) async {
     data = data ?? {};
     queryParameters = queryParameters ?? {};
     method = method ?? 'GET';
@@ -37,23 +62,27 @@ class HttpUtils {
     /// restful 请求处理
     /// /gysw/search/hist/:user_id        user_id=27
     /// 最终生成 url 为     /gysw/search/hist/27
-    data.forEach((key, value) {
-      if (url.indexOf(key) != -1) {
-        url = url.replaceAll(':$key', value.toString());
-      }
-    });
+//    data.forEach((key, value) {
+//      if (url.indexOf(key) != -1) {
+//        url = url.replaceAll(':$key', value.toString());
+//      }
+//    });
+    Map<String, dynamic> headMap = {
+      "token": _token,
+    };
+
     /// 打印请求相关信息：请求地址、请求方式、请求参数
     print('请求地址：【' + method + '  ' + url + '】');
-    print('请求参数：' + data.toString());
-    print('请求参数：' + queryParameters.toString());
+    print('header ：${headMap.toString()}');
     Dio dio = createInstance();
     var result;
     try {
       Response response = await dio.request(url,
           data: data,
-          queryParameters:queryParameters,
-          options: new Options(method: method));
+          queryParameters: queryParameters,
+          options: new Options(method: method, headers: headMap));
       result = json.decode(response.data.toString());
+
       /// 打印响应相关信息
       print('响应数据：' + response.toString());
     } on DioError catch (e) {

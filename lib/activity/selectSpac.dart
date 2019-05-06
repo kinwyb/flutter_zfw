@@ -250,8 +250,10 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
 
   // 选中的SKU
   void _selectSKU(String skuID, int stockNum) {
-    if (numInput.oldNum > 0 && this.skuID != null) {
-      resultValue[this.skuID] = numInput.oldNum;
+    print("stockNum : ${stockNum} skuID:${skuID}");
+    var _oldSKU = this.skuID;
+    if (numInput.oldNum > 0 && _oldSKU != null) {
+      resultValue[_oldSKU] = numInput.oldNum;
     }
     _stockNum = stockNum;
     this.skuID = skuID;

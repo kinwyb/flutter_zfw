@@ -7,8 +7,9 @@ import './title.dart';
 import './template.dart';
 import './bottomBar.dart';
 
+@immutable
 class Activity extends StatefulWidget {
-  String activityCode;
+  final String activityCode;
 
   Activity({Key key, this.activityCode}) : super(key: key);
 
@@ -18,13 +19,12 @@ class Activity extends StatefulWidget {
 
 class ActivityState extends State<Activity>
     with SingleTickerProviderStateMixin {
-      
   String activityCode;
 
   ActivityInfo info;
   List<ActivityProductSKU> skus;
 
-  final ActivityBottomBar bottomBar = new ActivityBottomBar(); 
+  final ActivityBottomBar bottomBar = new ActivityBottomBar();
 
   ActivityState(this.activityCode);
 
@@ -52,7 +52,7 @@ class ActivityState extends State<Activity>
       vsync: this,
       length: 2,
     );
-    mController.addListener((){
+    mController.addListener(() {
       setState(() {});
     });
     loadData();
@@ -66,13 +66,13 @@ class ActivityState extends State<Activity>
         title: Text('商品详情'),
       ),
       body: body(),
-      bottomNavigationBar: bottomBar ,
+      bottomNavigationBar: bottomBar,
     );
   }
 
   Widget body() {
     if (info == null) {
-      return RefreshWidget.loadMore();
+      return loadMoreWidget();
     } else {
       return ListView.builder(
         shrinkWrap: true,
@@ -93,7 +93,6 @@ class ActivityState extends State<Activity>
       return Container(
         color: Colors.white,
         height: 38.0,
-        margin: new EdgeInsets.only(bottom: 10),
         child: TabBar(
           isScrollable: false,
           //是否可以滚动
@@ -112,13 +111,62 @@ class ActivityState extends State<Activity>
         ),
       );
     } else {
-      if(mController.index == 0){
-        return new ActivityDescImages(imgs: info.ProductDescription);
-      }else {
+      if (mController.index == 0) {
+        return Container(
+          color: Colors.white,
+          child: Column(
+            children: <Widget>[
+              _productAttrs(),
+              new ActivityDescImages(imgs: info.ProductDescription),
+            ],
+          ),
+        );
+      } else {
         var imgs = List<ImgInfo>();
-        imgs.add(ImgInfo.fromParams(Src: "https://qiniu.zhifangw.cn/O-20190105152558802194096.png?filename=MjAxOTAxMDUxNTI1NTg4MDIxOTQwOTYucG5n"));
+        imgs.add(ImgInfo.fromParams(
+            Src:
+                "https://qiniu.zhifangw.cn/O-20190105152558802194096.png?filename=MjAxOTAxMDUxNTI1NTg4MDIxOTQwOTYucG5n"));
         return new ActivityDescImages(imgs: imgs);
       }
     }
+  }
+
+  // 商品规格属性
+  Widget _productAttrs() {
+    if (info.ProductAttrs == null || info.ProductAttrs.length < 1) {
+      return Container();
+    }
+    List<TableRow> tableRows = [];
+    for (var attr in info.ProductAttrs) {
+      tableRows.add(TableRow(
+        children: <Widget>[
+          Container(
+            height: 40,
+            alignment: Alignment.centerRight,
+            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+            child: Text(attr.name),
+          ),
+          Container(
+            height: 40,
+            alignment: Alignment.centerLeft,
+            padding: EdgeInsets.fromLTRB(10, 0, 10, 0),
+            child: Text(attr.value),
+          ),
+        ],
+      ));
+    }
+    return Container(
+      margin: EdgeInsets.fromLTRB(0, 20, 0, 20),
+      color: Colors.white,
+      child: Table(
+        columnWidths: const <int, TableColumnWidth>{
+          0: FixedColumnWidth(100.0),
+          1: FixedColumnWidth(200.0),
+        },
+        border: TableBorder.all(
+            color: Colors.grey[300], width: 1.0, style: BorderStyle.solid),
+        children: tableRows,
+      ),
+    );
   }
 }

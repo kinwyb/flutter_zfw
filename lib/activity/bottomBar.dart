@@ -5,7 +5,6 @@ import '../components/router/routers.dart';
 import './selectSpac.dart';
 
 class ActivityBottomBar extends StatelessWidget {
-
   ActivityInfo info;
   List<ActivityProductSKU> skus;
 
@@ -42,44 +41,44 @@ class ActivityBottomBar extends StatelessWidget {
   Widget _putShoppingCart(BuildContext context) {
     return Buttom(
       backgroundColor: Colors.yellow[800],
-      onTap: (){
-        showModalBottomSheet(context:context,builder: (context) {
-          return ActivitySelectSpec(
-            info: info,
-            skus: skus,
-            callback: _selectSpecCallback,
-            addShoppingCart: true,
-          );
-        });
+      onTap: () {
+        showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return ActivitySelectSpec(
+                info: info,
+                skus: skus,
+                callback: _selectSpecCallback,
+                addShoppingCart: true,
+              );
+            });
       },
-      children: <Widget>[
-        Text('加入购物车',style: _whiteColorTextStyle)
-      ],
+      children: <Widget>[Text('加入购物车', style: _whiteColorTextStyle)],
     );
   }
 
   Widget _buy(BuildContext context) {
     return Buttom(
       backgroundColor: Colors.red,
-      onTap: (){
-        showModalBottomSheet(context:context,builder: (context) {
-          return ActivitySelectSpec(
-            info: info,
-            skus: skus,
-            callback: _selectSpecCallback,
-            addShoppingCart: false,
-          );
-        });
+      onTap: () {
+        showModalBottomSheet(
+            context: context,
+            builder: (context) {
+              return ActivitySelectSpec(
+                info: info,
+                skus: skus,
+                callback: _selectSpecCallback,
+                addShoppingCart: false,
+              );
+            });
       },
-      children: <Widget>[
-        Text('直接购买',style: _whiteColorTextStyle)
-      ],
+      children: <Widget>[Text('直接购买', style: _whiteColorTextStyle)],
     );
   }
 
-  void _selectSpecCallback(Map<String,int> value,bool addShoppingCart) {
+  void _selectSpecCallback(Map<String, int> value, bool addShoppingCart) {
     print(value.toString());
-  } 
+  }
 
   Widget _buildNavigationIcon(BuildContext context) {
     return Row(
@@ -88,7 +87,7 @@ class ActivityBottomBar extends StatelessWidget {
           child: IconTitle(
             icon: Icon(Icons.home),
             title: Text('首页', style: iconTextStyle),
-            onTap: () => Routers.NavigateHome(context),
+            onTap: () => homeNavigate(context),
           ),
         ),
         Expanded(

@@ -12,7 +12,6 @@ class HomeWidget extends StatefulWidget {
 }
 
 class HomeWidgetState extends State<HomeWidget> {
-
   List<IndexBrand> brands = new List<IndexBrand>();
 
   ScrollController _scrollController = ScrollController(); //listview的控制器
@@ -32,19 +31,19 @@ class HomeWidgetState extends State<HomeWidget> {
 
   void lostenerScrollController() {
     if (_scrollController.position.pixels ==
-          _scrollController.position.maxScrollExtent) {
-        if(!isEnd) {
-          _getMore();
-        }
+        _scrollController.position.maxScrollExtent) {
+      if (!isEnd) {
+        _getMore();
+      }
     }
   }
 
   Future loadData() async {
-    if(!isEnd) {
+    if (!isEnd) {
       var brands = await HomeAPI.brands(_page);
       brands = brands ?? [];
       _page++;
-      if(brands.length < 1) {
+      if (brands.length < 1) {
         isEnd = true;
         _scrollController.removeListener(lostenerScrollController);
       }
@@ -57,32 +56,30 @@ class HomeWidgetState extends State<HomeWidget> {
 
   // 刷新界面
   Future<void> refresh() {
-      _page = 1;
-      isEnd = false;
-      this.brands.clear();
-      if(!_scrollController.hasListeners) {
-        _scrollController.addListener(lostenerScrollController);
-      }
-      return this.loadData();
+    _page = 1;
+    isEnd = false;
+    this.brands.clear();
+    if (!_scrollController.hasListeners) {
+      _scrollController.addListener(lostenerScrollController);
+    }
+    return this.loadData();
   }
 
   @override
   Widget build(BuildContext context) {
-    return BottomNavigationBarUtil.wapped(
-        context,
-        Scaffold(
-          appBar: AppBar(
-            title: Text('智纺工场'),
-          ),
-          body: RefreshIndicator(
-            onRefresh:refresh,
-            child: ListView.builder(
-              itemBuilder: _buildItem,
-              itemCount: brands.length + 3,
-              controller: _scrollController,
-            ),
-          ),
-      )
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('智纺工场'),
+      ),
+      body: RefreshIndicator(
+        onRefresh: refresh,
+        child: ListView.builder(
+          itemBuilder: _buildItem,
+          itemCount: brands.length + 3,
+          controller: _scrollController,
+        ),
+      ),
+      bottomNavigationBar: bottomNavigationBar(context),
     );
   }
 
@@ -90,16 +87,19 @@ class HomeWidgetState extends State<HomeWidget> {
     if (index == 0) {
       return new HomeBanner();
     } else if (index == 1) {
-      return new HomeCategory();
+      return new HomeCategory(
+        showLoadMore: true,
+      );
     } else if (index > this.brands.length + 1) {
-      if(isEnd) {
-        return RefreshWidget.loadMoreEnd();
+      if (isEnd) {
+        return noMoreWidget();
       }
-      return RefreshWidget.loadMore();
+      return loadMoreWidget();
     } else if (index > 1 && this.brands.length > 0) {
       index = index - 2;
       return HomeBrand(brand: this.brands[index]);
     }
+    return Container();
   }
 
   // 加载更多

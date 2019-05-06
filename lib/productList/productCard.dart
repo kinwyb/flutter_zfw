@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../components/iconTitle.dart';
+import '../components/router/routers.dart';
 
 class ProductCard extends StatelessWidget {
   ProductInfo productInfo;
@@ -8,7 +9,8 @@ class ProductCard extends StatelessWidget {
       new TextStyle(fontSize: 15.0, fontWeight: FontWeight.bold);
   final TextStyle _oemNameTextStyle =
       new TextStyle(fontSize: 9.0, color: Colors.red);
-  final TextStyle _shareButtonTextStyle = new TextStyle(fontSize: 11.0,color: Color.fromARGB(200, 0, 0, 0));
+  final TextStyle _shareButtonTextStyle =
+      new TextStyle(fontSize: 11.0, color: Color.fromARGB(200, 0, 0, 0));
   final BoxDecoration _shareButtonDecoration = new BoxDecoration(
     border: new Border.all(width: 1, color: Colors.red),
     borderRadius: new BorderRadius.circular(50),
@@ -31,78 +33,94 @@ class ProductCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      margin: new EdgeInsets.fromLTRB(0, 5, 0, 5),
-      // color: Colors.green,
-      child: Row(
-        children: <Widget>[
-          Container(
-            width: 100,
-            child: Image.network(
-              productInfo.productImg,
-              fit: BoxFit.fill,
-            ),
+    return GestureDetector(
+      onTap: () {
+        activityNavigate(context, productInfo.activityCode);
+      },
+      child: Card(
+        margin: new EdgeInsets.fromLTRB(0, 5, 0, 5),
+        // color: Colors.green,
+        child: _cardItem(context),
+      ),
+    );
+  }
+
+  Widget _cardItem(BuildContext context) {
+    return Row(
+      children: <Widget>[
+        Container(
+          width: 100,
+          child: Image.network(
+            productInfo.productImg,
+            fit: BoxFit.fill,
           ),
-          Expanded(
-            child: Container(
-              // color: Colors.pink,
-              padding: new EdgeInsets.fromLTRB(10, 5, 10, 5),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    // color: Colors.yellow,
-                    alignment: Alignment.centerLeft,
-                    child: Text(
-                      productInfo.productName,
-                      style: _titleTextStyle,
-                    ),
-                  ),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    margin: new EdgeInsets.fromLTRB(0, 5, 0, 10),
-                    child: Container(
-                      // alignment: Alignment.centerLeft,
-                      padding: new EdgeInsets.fromLTRB(5, 3, 5, 3),
-                      decoration: _oemNameDecoration,
-                      child:
-                          Text(productInfo.oemName, style: _oemNameTextStyle),
-                    ),
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Text('¥${productInfo.price}', style: _priceTextStyle),
-                      Container(
-                        margin: new EdgeInsets.fromLTRB(5, 0, 5, 0),
-                        child: Text(
-                          '¥${productInfo.markPrice}',
-                          style: _markPriceTextStyle,
-                        ),
-                      ),
-                      Expanded(
-                        child: Container(
-                          alignment: Alignment.centerRight,
-                          child: CustomerButton(
-                            height: 25,
-                            padding: new EdgeInsets.fromLTRB(10, 0, 10, 0),
-                            materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
-                            minWidth: 10,
-                            child: Text(
-                              "分享赚钱",
-                              style: _shareButtonTextStyle,
-                            ),
-                            color: Colors.yellow,
-                            shape: StadiumBorder(),
-                          ),
-                        ),
-                      )
-                    ],
-                  )
-                ],
+        ),
+        _cardItemRight(context)
+      ],
+    );
+  }
+
+  // 右边部分
+  Widget _cardItemRight(BuildContext context) {
+    return Expanded(
+      child: Container(
+        // color: Colors.pink,
+        padding: new EdgeInsets.fromLTRB(10, 5, 10, 5),
+        child: Column(
+          children: <Widget>[
+            Container(
+              // color: Colors.yellow,
+              alignment: Alignment.centerLeft,
+              child: Text(
+                productInfo.productName,
+                style: _titleTextStyle,
               ),
             ),
-          )
-        ],
+            Container(
+              alignment: Alignment.centerLeft,
+              margin: new EdgeInsets.fromLTRB(0, 5, 0, 10),
+              child: Container(
+                // alignment: Alignment.centerLeft,
+                padding: new EdgeInsets.fromLTRB(5, 3, 5, 3),
+                decoration: _oemNameDecoration,
+                child: Text(productInfo.oemName, style: _oemNameTextStyle),
+              ),
+            ),
+            Row(
+              children: <Widget>[
+                Text('¥${productInfo.price}', style: _priceTextStyle),
+                Container(
+                  margin: new EdgeInsets.fromLTRB(5, 0, 5, 0),
+                  child: Text(
+                    '¥${productInfo.markPrice}',
+                    style: _markPriceTextStyle,
+                  ),
+                ),
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.centerRight,
+                    child: CustomerButton(
+                      onPressed: () {
+                        print('分享赚钱');
+                        // return false;
+                      },
+                      height: 25,
+                      padding: new EdgeInsets.fromLTRB(10, 0, 10, 0),
+                      materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                      minWidth: 10,
+                      child: Text(
+                        "分享赚钱",
+                        style: _shareButtonTextStyle,
+                      ),
+                      color: Colors.yellow,
+                      shape: StadiumBorder(),
+                    ),
+                  ),
+                )
+              ],
+            )
+          ],
+        ),
       ),
     );
   }

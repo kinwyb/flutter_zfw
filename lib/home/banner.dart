@@ -3,17 +3,14 @@ import 'package:flutter_swiper/flutter_swiper.dart';
 import '../components/api/home.dart';
 
 class HomeBanner extends StatefulWidget {
-
   @override
   State<StatefulWidget> createState() => new BannerPageState();
-
 }
 
 class BannerPageState extends State<HomeBanner> {
-
   List<IndexBanner> banners = new List<IndexBanner>();
 
-   @override
+  @override
   void initState() {
     super.initState();
     loadData();
