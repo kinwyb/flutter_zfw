@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:zfw/components/countDownTime.dart';
 import '../components/component.dart';
 
 class ShoppingCartPage extends StatefulWidget {
@@ -13,7 +14,13 @@ class _ShoppingCartState extends State<ShoppingCartPage> {
       appBar: AppBar(
         title: Text('购物车'),
       ),
-      body: Text('购物车'),
+      body: CountDownTimer(
+        seconds: 200,
+        textStyle: TextStyle(
+          fontSize: 20,
+          color: Colors.red,
+        ),
+      ),
       bottomNavigationBar: bottomNavigationBar(context),
     );
   }

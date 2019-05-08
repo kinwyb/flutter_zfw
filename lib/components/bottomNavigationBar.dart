@@ -9,7 +9,7 @@ int _bottomNavigationIndex = 0;
 BottomNavigationBar bottomNavigationBar(BuildContext context) {
   return BottomNavigationBar(
     iconSize: 22.0,
-    fixedColor: Colors.black,
+    fixedColor: Colors.yellow[900],
     currentIndex: _bottomNavigationIndex,
     onTap: (index) {
       if (index == _bottomNavigationIndex) {

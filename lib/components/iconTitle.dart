@@ -1,9 +1,19 @@
 import 'package:flutter/material.dart';
 
+final _redPointBoxDecoration = BoxDecoration(
+  borderRadius: BorderRadius.circular(20),
+  color: Colors.red,
+);
+const _redPointTextStyle = TextStyle(
+  color: Colors.white,
+  fontSize: 11,
+);
+
 class IconTitle extends StatelessWidget {
   Text title;
   Icon icon;
   Color backgroundColor;
+  int num;
   GestureTapCallback onTap;
 
   IconTitle(
@@ -11,6 +21,7 @@ class IconTitle extends StatelessWidget {
       @required this.icon,
       this.title,
       this.backgroundColor,
+      this.num = 0,
       this.onTap})
       : assert(icon != null),
         super(key: key);
@@ -18,7 +29,18 @@ class IconTitle extends StatelessWidget {
   Widget build(BuildContext context) {
     if (title == null) {
       //没有标题直接是一个Icon
-      return this.icon;
+      return Stack(
+        children: <Widget>[
+          this.icon,
+          Positioned(
+            child: RedPoint(
+              num: num,
+            ),
+            top: 0,
+            right: 0,
+          )
+        ],
+      );
     } else {
       return GestureDetector(
         onTap: onTap,
@@ -28,9 +50,20 @@ class IconTitle extends StatelessWidget {
             children: <Widget>[
               Expanded(
                 flex: 3,
-                child: Container(
-                  alignment: Alignment.bottomCenter,
-                  child: icon,
+                child: Stack(
+                  children: <Widget>[
+                    Container(
+                      alignment: Alignment.bottomCenter,
+                      child: icon,
+                    ),
+                    Positioned(
+                      child: RedPoint(
+                        num: num,
+                      ),
+                      top: 0,
+                      right: 0,
+                    )
+                  ],
                 ),
               ),
               Expanded(flex: 2, child: title),
@@ -39,6 +72,33 @@ class IconTitle extends StatelessWidget {
         ),
       );
     }
+  }
+}
+
+class RedPoint extends StatelessWidget {
+  final int num;
+
+  RedPoint({Key key, this.num}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    if (num < 1) {
+      return Container();
+    }
+    String text;
+    if (num > 999) {
+      text = "...";
+    } else {
+      text = num.toString();
+    }
+    return Container(
+      decoration: _redPointBoxDecoration,
+      padding: EdgeInsets.fromLTRB(5, 2, 4, 2),
+      child: Text(
+        text,
+        style: _redPointTextStyle,
+      ),
+    );
   }
 }
 
@@ -134,21 +194,23 @@ class CustomerButton extends MaterialButton {
       onPressed: onPressed,
       onHighlightChanged: onHighlightChanged,
       fillColor: color,
-      textStyle: theme.textTheme.button.copyWith(color: buttonTheme.getTextColor(this)),
+      textStyle: theme.textTheme.button
+          .copyWith(color: buttonTheme.getTextColor(this)),
       highlightColor: highlightColor ?? theme.highlightColor,
       splashColor: splashColor ?? theme.splashColor,
       elevation: buttonTheme.getElevation(this),
       highlightElevation: buttonTheme.getHighlightElevation(this),
       padding: buttonTheme.getPadding(this),
       constraints: buttonTheme.getConstraints(this).copyWith(
-        minWidth: minWidth,
-        minHeight: height,
-      ),
+            minWidth: minWidth,
+            minHeight: height,
+          ),
       shape: buttonTheme.getShape(this),
       clipBehavior: clipBehavior ?? Clip.none,
       animationDuration: buttonTheme.getAnimationDuration(this),
       child: child,
-      materialTapTargetSize: materialTapTargetSize ?? theme.materialTapTargetSize,
+      materialTapTargetSize:
+          materialTapTargetSize ?? theme.materialTapTargetSize,
     );
   }
 }

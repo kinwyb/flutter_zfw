@@ -25,4 +25,26 @@ class UserAPI {
     }
     return ret.data;
   }
+
+  // 会员信息
+  static Future<UserInfo> userInfo() async {
+    var data = await HttpUtils.request("/micro/user/getUserInfo",
+        method: HttpUtils.GET);
+    var ret = new UserInfoResp.fromJson(data);
+    if (ret.code == 0) {
+      return ret.data;
+    }
+    return ret.data;
+  }
+
+  // 会员数据统计
+  static Future<UserDataCount> dataCount() async {
+    var data = await HttpUtils.request("/micro/user/data/count",
+        method: HttpUtils.GET);
+    var ret = new UserDataCountResp.fromJson(data);
+    if (ret.code == 0) {
+      return ret.data;
+    }
+    return ret.data;
+  }
 }

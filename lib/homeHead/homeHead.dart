@@ -4,8 +4,11 @@ import '../components/api/user.dart';
 import '../components/component.dart';
 
 const _itemRowBoxDecoration = BoxDecoration(
-    border: Border(bottom: BorderSide(width: 1, color: Colors.grey)));
-
+  color: Colors.white,
+  border: Border(
+    bottom: BorderSide(width: 1, color: Colors.grey),
+  ),
+);
 const _myFansCountTextStyle = TextStyle(fontSize: 20);
 const _topTextTextStyle = TextStyle(
   fontSize: 18,
@@ -177,7 +180,7 @@ class _HomeHeadPageState extends State<HomeHeadPage>
         height: 40,
         alignment: Alignment.centerLeft,
         decoration: _itemRowBoxDecoration,
-//      color: Colors.green,
+//        color: Colors.green,
 //      margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
         padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
         child: Row(
@@ -381,34 +384,35 @@ class _HomeHeadPageState extends State<HomeHeadPage>
   // 佣金帮助
   void _rebateHelp(BuildContext context) {
     showModalBottomSheet(
-        context: context,
-        builder: (context) {
-          return onTap(
-            Container(
-              height: 150,
-              color: Colors.white,
-              padding: EdgeInsets.fromLTRB(20, 5, 0, 10),
-              child: Column(
-                children: <Widget>[
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
-                    child: Text(
-                      '待结算佣金说明',
-                      style: _helpTitleTextStyle,
-                    ),
+      context: context,
+      builder: (context) {
+        return onTap(
+          Container(
+            height: 150,
+            color: Colors.white,
+            padding: EdgeInsets.fromLTRB(20, 5, 0, 10),
+            child: Column(
+              children: <Widget>[
+                Container(
+                  alignment: Alignment.centerLeft,
+                  margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
+                  child: Text(
+                    '待结算佣金说明',
+                    style: _helpTitleTextStyle,
                   ),
-                  Container(
-                    alignment: Alignment.centerLeft,
-                    child: Text('待结算佣金说明xxxxxxxxxx'),
-                  ),
-                ],
-              ),
+                ),
+                Container(
+                  alignment: Alignment.centerLeft,
+                  child: Text('待结算佣金说明xxxxxxxxxx'),
+                ),
+              ],
             ),
-            () {
-              return false;
-            },
-          );
-        });
+          ),
+          () {
+            return false;
+          },
+        );
+      },
+    );
   }
 }

@@ -11,20 +11,22 @@ import '../../member/login.dart';
 import '../../homeHead/main.dart';
 import '../../shoppingCart/main.dart';
 import '../../main.dart';
+import '../../order/list.dart';
 
 final router = Router();
 final _checkLoginPath = ["/member", "/homeHead", "/shoppingCart"];
 
 void routerInit() {
   login("15058679668", "www123");
-  registerHome(); //首页
-  registerActivityRouter(); //活动详情页面
-  registerCategoryRouter(); //分类详情
+  _registerHome(); //首页
+  _registerActivity(); //活动详情页面
+  _registerCategory(); //分类详情
+  _registerOrder(); //订单详情
 }
 
 //////////// 首页 //////////////
 
-void registerHome() {
+void _registerHome() {
   router.define(
     "/",
     handler: Handler(
@@ -128,7 +130,7 @@ void loginNavigate(BuildContext context) {
 //////////// 商品详情 /////////////
 
 // 注册路由
-void registerActivityRouter() {
+void _registerActivity() {
   router.define(
     "/activity",
     handler: Handler(
@@ -149,7 +151,7 @@ void activityNavigate(BuildContext context, String activityCode) {
 /////////// 分类 /////////////
 
 // 注册路由
-void registerCategoryRouter() {
+void _registerCategory() {
   router.define(
     "/category/info",
     handler: Handler(
@@ -179,4 +181,24 @@ void categoryNavigate(BuildContext context, String categoryName) {
 
 void categoryListNavigate(BuildContext context) {
   router.navigateTo(context, Uri.encodeFull("/category/list"));
+}
+
+/////////// 订单 /////////////
+
+// 注册路由
+void _registerOrder() {
+  router.define(
+    "/order/list",
+    handler: Handler(
+      handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+        var orderState = params["orderState"]?.first;
+        return new OrderListPage(orderState: num.parse(orderState));
+      },
+    ),
+    transitionType: TransitionType.inFromRight,
+  );
+}
+
+void orderListNavigate(BuildContext context, int orderState) {
+  navigateTo(context, "/order/list?orderState=" + orderState.toString());
 }
