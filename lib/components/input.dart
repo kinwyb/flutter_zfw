@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import './iconTitle.dart';
@@ -8,12 +10,13 @@ class NumInput extends StatefulWidget {
 
   Color backgroundColor;
   _NumInputState inputState = new _NumInputState();
-
+  Function(FocusNode) focusNodeValueFunc;
+  ValueChanged<String> onChangeed;
   int minNum = 0;
   int maxNum = 65535;
 
   String text;
-  void setText(String newText){
+  void setText(String newText) {
     oldNum = int.parse(newText);
     controller.text = newText;
   }
@@ -27,10 +30,14 @@ class NumInput extends StatefulWidget {
       this.text,
       this.backgroundColor,
       this.minNum = 0,
-      @required this.focusNode,
+      this.focusNode,
+      this.focusNodeValueFunc,
+      this.onChangeed,
       this.maxNum = 65535})
-      : assert(focusNode != null),
-        super(key: key) {
+      : super(key: key) {
+    if (focusNode == null) {
+      focusNode = FocusNode();
+    }
     oldNum = int.parse(text);
     textField = TextField(
       controller: controller,
@@ -61,6 +68,23 @@ class NumInput extends StatefulWidget {
         }
       },
     );
+    focusNode.removeListener(_focusNodeListen);
+    focusNode.addListener(_focusNodeListen);
+    controller.text = text;
+    controller.addListener(_onChange);
+  }
+
+  void _onChange() {
+    if (onChangeed != null) {
+      onChangeed(controller.text);
+    }
+  }
+
+  // 监听function
+  void _focusNodeListen() {
+    if (focusNodeValueFunc != null) {
+      focusNodeValueFunc(focusNode);
+    }
   }
 
   @override
@@ -72,16 +96,15 @@ class NumInput extends StatefulWidget {
 }
 
 class _NumInputState extends State<NumInput> {
-
   @override
   void dispose() {
     super.dispose();
-    widget.controller.dispose();
+    widget.controller?.removeListener(widget._onChange);
+    widget.controller?.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
-    widget.controller.text = widget.text;
     return Row(
       children: <Widget>[
         Buttom(
@@ -126,5 +149,30 @@ class _NumInputState extends State<NumInput> {
         ),
       ],
     );
+  }
+}
+
+// 监听值变动
+class ListenValueChangedController<T extends Function> {
+  List<ValueChanged<T>> _listens = [];
+
+  void addListen(ValueChanged<T> listen) {
+    if (listen != null) {
+      _listens.add(listen);
+    }
+  }
+
+  void removeListen(ValueChanged<T> listen) {
+    int index = _listens.indexOf(listen);
+    if (index >= 0) {
+      _listens.removeAt(index);
+    }
+  }
+
+  // 更新
+  void changeValue(T val) {
+    for (var v in _listens) {
+      v(val);
+    }
   }
 }

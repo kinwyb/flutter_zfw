@@ -26,6 +26,7 @@ dependencies:
   flutter_swiper: ^1.0.6
   dio: ^2.1.0
   fluro: ^1.4.0
+  flutter_slidable: ^0.4.9
 
 dev_dependencies:
   flutter_test:

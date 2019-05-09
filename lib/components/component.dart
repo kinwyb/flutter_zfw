@@ -5,6 +5,7 @@ export './input.dart';
 export './bottomNavigationBar.dart';
 export './refresh.dart';
 export './modal.dart';
+export './checkBox.dart';
 
 TextStyle textStyleColor(Color color) {
   return TextStyle(color: color);
