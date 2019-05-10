@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zfw/components/api/shoppingCart.dart';
 import 'package:zfw/components/component.dart';
+import 'package:zfw/shoppingCart/blocs/bloc.dart';
 import 'package:zfw/shoppingCart/shop.dart';
 
 class ShoppingCartPage extends StatefulWidget {
@@ -9,37 +11,57 @@ class ShoppingCartPage extends StatefulWidget {
 }
 
 class _ShoppingCartState extends State<ShoppingCartPage> {
-  SignleBuyShoppingCart _shoppingCartData = SignleBuyShoppingCart(
-    shops: [],
+  final SignlebuyshoppingcartBloc _bloc = SignlebuyshoppingcartBloc();
+  final ShoppingcartbottomAmountBloc _bottomBloc =
+      ShoppingcartbottomAmountBloc();
+  final _bottomContainerDecoration = BoxDecoration(
+    color: Colors.white,
+    border: Border(
+      top: BorderSide(
+        width: 0.5,
+        color: Colors.grey,
+      ),
+    ),
   );
+  final _priceTextStyle = TextStyle(color: Colors.red);
+  CheckBoxTree<ShoppingCartProduct> _allCheckBoxTree;
+
+  _ShoppingCartState() {
+    _allCheckBoxTree = CheckBoxTree<ShoppingCartProduct>(
+      value: false,
+      childActiveColor: Colors.grey,
+      child: Text('全选'),
+      onChanged: _onCheckBoxValueChange,
+    );
+  }
+
+  void _onCheckBoxValueChange(bool value) {
+    List<ShoppingCartProduct> datas = _allCheckBoxTree.checkedDatas();
+    double _money = 0.0;
+    for (var v in datas) {
+      _money += v.price * v.num;
+    }
+    _bottomBloc.dispatch(ShoppingcartbottomAmountEvent(_money));
+  }
 
   @override
   void initState() {
     super.initState();
-    _loadData();
-  }
-
-  void _loadData() async {
-    _shoppingCartData = await ShoppingCartAPI.singlebuyInfo();
-    _update();
-  }
-
-  void _update() {
-    if (mounted) {
-      setState(() {});
-    }
+    _bloc.dispatch(SignlebuyshoppingcartEventLoad());
   }
 
   FocusNode _focusNode;
-  _BottomCount bottom = _BottomCount();
 
   void _focusNodeChange(focusNode) {
     _focusNode = focusNode;
   }
 
-  void _itemRemove(ShoppingCartShop shop) {
-    _shoppingCartData.shops.remove(shop);
-    _update();
+  @override
+  void dispose() {
+    super.dispose();
+    _bottomBloc.dispose();
+    _bloc.dispose();
+    _allCheckBoxTree.dispose();
   }
 
   @override
@@ -55,115 +77,76 @@ class _ShoppingCartState extends State<ShoppingCartPage> {
             _focusNode.unfocus();
           }
         },
-        child: Column(
-          children: <Widget>[
-            Container(
-              padding: EdgeInsets.only(left: 10, top: 5, bottom: 5),
-              color: Colors.yellow[800],
-              child: Row(
-                children: <Widget>[
-                  Icon(
-                    Icons.notifications_active,
-                    size: 18,
-                  ),
-                  Text(" 请及时提交订单,商品数量有限可能会被抢空"),
-                ],
+        child: BlocProvider(
+          bloc: _bloc,
+          child: Column(
+            children: <Widget>[
+              Container(
+                padding: EdgeInsets.only(left: 20, top: 10, bottom: 10),
+                color: Colors.yellow[800],
+                child: Row(
+                  children: <Widget>[
+                    Icon(
+                      Icons.notifications_active,
+                      size: 18,
+                    ),
+                    Text(" 请及时提交订单,商品数量有限可能会被抢空"),
+                  ],
+                ),
               ),
-            ),
-            Expanded(
-              child: ListView.builder(
-                itemBuilder: (context, index) {
-                  return Shop(
-                    data: _shoppingCartData.shops[index],
-                    allCheckBoxTree: bottom._allCheckBoxTree,
-                    focusNodeChange: _focusNodeChange,
-                    removed: _itemRemove,
-                  );
-                },
-                itemCount: _shoppingCartData.shops.length,
+              Expanded(
+                child: BlocBuilder<SignlebuyshoppingcartEvent,
+                    SignlebuyshoppingcartState>(
+                  bloc: _bloc,
+                  builder: (context, state) {
+                    return ListView.builder(
+                      itemBuilder: (context, index) {
+                        if (state.data.shops.length < 1) {
+                          return noMoreWidget();
+                        } else {
+                          return Shop(
+                            data: state.data.shops[index],
+                            allCheckBoxTree: _allCheckBoxTree,
+                            focusNodeChange: _focusNodeChange,
+                          );
+                        }
+                      },
+                      itemCount: state.data.shops.length,
+                    );
+                  },
+                ),
               ),
-            ),
-            bottom,
-          ],
+              Container(
+                height: 50,
+                decoration: _bottomContainerDecoration,
+                child: Row(
+                  children: <Widget>[
+                    _allCheckBoxTree,
+                    BlocBuilder<ShoppingcartbottomAmountEvent,
+                        ShoppingcartbottomAmountState>(
+                      bloc: _bottomBloc,
+                      builder: (context, state) {
+                        return Text.rich(
+                          TextSpan(
+                            text: "     ",
+                            children: [
+                              TextSpan(text: "合计: "),
+                              TextSpan(
+                                  text: "¥${state.amount.toStringAsFixed(2)}",
+                                  style: _priceTextStyle),
+                            ],
+                          ),
+                        );
+                      },
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       bottomNavigationBar: bottomNavigationBar(context),
-    );
-  }
-}
-
-class _BottomCount extends StatefulWidget {
-  CheckBoxTree<ShoppingCartProduct> _allCheckBoxTree;
-  double _money = 0;
-
-  _BottomCount() {
-    _allCheckBoxTree = CheckBoxTree<ShoppingCartProduct>(
-      value: false,
-      childActiveColor: Colors.grey,
-      child: Text('全选'),
-      onChanged: _onCheckBoxValueChange,
-    );
-  }
-
-  void _onCheckBoxValueChange(bool value) {
-    List<ShoppingCartProduct> datas = _allCheckBoxTree.checkedDatas();
-    _money = 0.0;
-    for (var v in datas) {
-      _money += v.price * v.num;
-    }
-    if (_updateChild != null) {
-      _updateChild();
-    }
-  }
-
-  VoidCallback _updateChild;
-
-  @override
-  _BottomCountState createState() => _BottomCountState();
-}
-
-class _BottomCountState extends State<_BottomCount> {
-  final _bottomContainerDecoration = BoxDecoration(
-    color: Colors.white,
-    border: Border(
-      top: BorderSide(
-        width: 0.5,
-        color: Colors.grey,
-      ),
-    ),
-  );
-  final _priceTextStyle = TextStyle(color: Colors.red);
-
-  void _update() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    if (widget._updateChild == null) {
-      widget._updateChild = _update;
-    }
-    return Container(
-      height: 40,
-      decoration: _bottomContainerDecoration,
-      child: Row(
-        children: <Widget>[
-          widget._allCheckBoxTree,
-          Text.rich(
-            TextSpan(
-              text: "     ",
-              children: [
-                TextSpan(text: "合计: "),
-                TextSpan(
-                    text: "¥${widget._money.toStringAsFixed(2)}",
-                    style: _priceTextStyle),
-              ],
-            ),
-          ),
-        ],
-      ),
     );
   }
 }

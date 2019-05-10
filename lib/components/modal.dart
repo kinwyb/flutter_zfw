@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:oktoast/oktoast.dart';
 
 const Duration _kBottomSheetDuration = Duration(milliseconds: 200);
 
@@ -114,4 +115,12 @@ class _ModalSheetState<T> extends State<_ModalSheet<T>> {
       ),
     );
   }
+}
+
+// 显示toast
+Widget toast(MaterialApp app) {
+  return OKToast(
+    dismissOtherOnShow: true,
+    child: app,
+  );
 }

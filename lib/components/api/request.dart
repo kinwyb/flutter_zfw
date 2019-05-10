@@ -1,8 +1,10 @@
 import 'package:dio/dio.dart';
+import 'package:zfw/components/store.dart';
 import 'dart:async';
 import 'dart:convert';
 import './beans/login.dart';
 
+const _tokenKey = "token";
 String _token = "";
 
 // 检测登入
@@ -24,6 +26,7 @@ Future<LoginResp> login(String username, String password) async {
 // 设置登入token
 void setToken(String token) {
   _token = token;
+  Store.setValue(_tokenKey, token);
 }
 
 /*
@@ -74,6 +77,7 @@ class HttpUtils {
     /// 打印请求相关信息：请求地址、请求方式、请求参数
     print('请求地址：【' + method + '  ' + url + '】');
     print('header ：${headMap.toString()}');
+    print('data ：${data.toString()}');
     Dio dio = createInstance();
     var result;
     try {

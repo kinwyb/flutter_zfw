@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:zfw/components/component.dart';
 import '../components/router/routers.dart';
 import './member.dart';
 
 class MemberApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return toast(MaterialApp(
       title: '会员中心',
       debugShowCheckedModeBanner: false,
+      showPerformanceOverlay: showPerformanceOverlay,
       theme: ThemeData(
         // This is the theme of your application.
         //
@@ -24,6 +26,6 @@ class MemberApp extends StatelessWidget {
       // home: MyHomePage(title: 'Flutter Demo Home Page'),
       home: new MemberPage(),
       // home: Activity(activityCode: "c110d2ca40ca11e9941b00163e136d45",)
-    );
+    ));
   }
 }

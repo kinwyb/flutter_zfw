@@ -1,5 +1,5 @@
 import 'dart:convert' show json;
-import './page.dart';
+import 'package:zfw/components/api/beans/common.dart';
 
 class CategoryInfoResp {
   int code;

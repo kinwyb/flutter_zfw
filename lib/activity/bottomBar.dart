@@ -1,6 +1,10 @@
+import 'dart:core';
 import 'package:flutter/material.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:zfw/activity/sku.dart';
+import 'package:zfw/components/api/shoppingCart.dart';
+import 'package:zfw/components/component.dart';
 import '../components/api/activity.dart';
-import '../components/component.dart';
 import '../components/router/routers.dart';
 import './selectSpac.dart';
 
@@ -48,7 +52,6 @@ class ActivityBottomBar extends StatelessWidget {
               return ActivitySelectSpec(
                 info: info,
                 skus: skus,
-                callback: _selectSpecCallback,
                 addShoppingCart: true,
               );
             });
@@ -67,17 +70,12 @@ class ActivityBottomBar extends StatelessWidget {
               return ActivitySelectSpec(
                 info: info,
                 skus: skus,
-                callback: _selectSpecCallback,
                 addShoppingCart: false,
               );
             });
       },
       children: <Widget>[Text('直接购买', style: _whiteColorTextStyle)],
     );
-  }
-
-  void _selectSpecCallback(Map<String, int> value, bool addShoppingCart) {
-    print(value.toString());
   }
 
   Widget _buildNavigationIcon(BuildContext context) {
@@ -104,7 +102,7 @@ class ActivityBottomBar extends StatelessWidget {
               '购物车',
               style: iconTextStyle,
             ),
-            onTap: () => print('购物车'),
+            onTap: () => shoppingCartNavigate(context),
           ),
         )
       ],

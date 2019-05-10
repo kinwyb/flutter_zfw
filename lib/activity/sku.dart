@@ -4,17 +4,18 @@ import '../components/api/activity.dart';
 class ActivitySKU extends StatefulWidget {
   List<ActivityProductSKU> sku;
 
-  Map<String, _sku> skuMap = {};
-  List<_sku> skus = [];
+  Map<String, SkuTree> skuAttrMap = {};
+  List<SkuTree> skus = [];
   Color backgroundColor;
-  Function(String skuID, int stockNum) selectCallBack; //选择规格变化后回调
+  Function(SkuTree sku) selectCallBack; //选择规格变化后回调
 
   ActivitySKU({Key key, this.sku, this.backgroundColor, this.selectCallBack})
       : assert(sku != null),
         super(key: key) {
     for (var s in sku) {
-      var ss = _sku(s);
-      skuMap[s.Name] = ss;
+      var ss = SkuTree(s);
+      ss.attr = ss.name;
+      skuAttrMap[ss.attr] = ss;
       skus.add(ss);
     }
   }
@@ -51,41 +52,51 @@ class ActivitySKUState extends State<ActivitySKU> {
     String groupName;
     String first = "";
     var sku = widget.skus;
+    String prefixAttr = "";
     if (level > 1) {
-      sku = widget.skuMap[_selectMap[level - 1]]?.children;
+      sku = widget.skuAttrMap[_selectMap[level - 1]]?.children;
       if (sku == null) {
         _maxLevel = level - 1;
         return wgs;
       }
+      prefixAttr = widget.skuAttrMap[_selectMap[level - 1]]?.attr;
+      if (prefixAttr != null) {
+        prefixAttr = prefixAttr + ",";
+      }
     }
     for (var spec in sku) {
+      spec.attr = prefixAttr + spec.name;
+      if (!widget.skuAttrMap.containsKey(spec.attr)) {
+        widget.skuAttrMap[spec.attr] = spec;
+      }
       if (spec.children.length < 1 && spec.skuID.isEmpty) {
         // 没有子类而且没有skuid的规格不展示
         continue;
-      }else if (first == "" && level == 1) {
-        first = spec.name;
-      } 
+      } else if (first == "" && level == 1) {
+        first = spec.attr;
+      }
       BoxDecoration decoration = _noSelectedDecoration;
       TextStyle textstyle = _noSelectedTextStyle;
-      if ((_selectMap[level] == null && first == spec.name) ||
-          _selectMap[level] == spec.name) {
+      if ((_selectMap[level] == null && first == spec.attr) ||
+          _selectMap[level] == spec.attr) {
         decoration = _selectedDecoration;
         textstyle = _selectedTextStyle;
       }
       wgWrap.children.add(GestureDetector(
         onTap: () {
           // 规格选择变化了,重新渲染
-          if (_selectMap[level]?.toString() != spec.name) {
-            _selectMap[level] = spec.name;
+          if (_selectMap[level]?.toString() != spec.attr) {
+            _selectMap[level] = spec.attr;
             // 把下一级选择的全部取消掉
             for (var i = level + 1; i <= _maxLevel; i++) {
               _selectMap.remove(i);
             }
             if (widget.selectCallBack != null &&
                 _selectMap[_maxLevel] != null) {
-              widget.selectCallBack(spec.skuID, spec.stockNum);
+              SkuTree sku = widget.skuAttrMap[_selectMap[_maxLevel]];
+              widget.selectCallBack(sku);
             } else if (_selectMap[_maxLevel] == null) {
-              widget.selectCallBack(null, 0);
+              widget.selectCallBack(null);
             }
             setState(() {});
           }
@@ -144,6 +155,11 @@ class ActivitySKUState extends State<ActivitySKU> {
     ));
     if (level < 2 && !_selectMap.containsKey(level)) {
       _selectMap[level] = first;
+      SkuTree firstSKU = widget.skuAttrMap[first];
+      if (firstSKU != null && firstSKU.skuID != "") {
+        firstSKU.attr = firstSKU.name;
+        widget.selectCallBack(firstSKU);
+      }
     }
     if (childs.length > 0) {
       wgs.addAll(childs);
@@ -170,27 +186,29 @@ class ActivitySKUState extends State<ActivitySKU> {
   final TextStyle _noSelectedTextStyle = new TextStyle(color: Colors.black);
 }
 
-class _sku {
+class SkuTree {
   String groupName;
   String skuID;
   String name;
   int stockNum;
-  List<_sku> children = [];
+  int num;
+  String attr;
+  List<SkuTree> children = [];
 
-  _sku(ActivityProductSKU sku) {
+  SkuTree(ActivityProductSKU sku) {
     groupName = sku.SpacGroupName;
     skuID = sku.SkuID ?? "";
     name = sku.Name;
     stockNum = sku.Store;
     if (sku.Values != null && sku.Values.length > 0) {
       for (var s in sku.Values) {
-        children.add(_sku(s));
+        children.add(SkuTree(s));
       }
     }
   }
 
   // 获取指定子对象
-  _sku getChild(String val) {
+  SkuTree getChild(String val) {
     for (var i in children) {
       if (i.name == val) {
         return i;

@@ -1,9 +1,14 @@
+import 'dart:convert';
+import 'dart:core';
 import 'package:flutter/material.dart';
+import 'package:oktoast/oktoast.dart';
+import 'package:zfw/components/api/shoppingCart.dart';
+import 'package:zfw/components/component.dart';
+import 'package:zfw/components/router/routers.dart';
 import '../components/iconTitle.dart';
 import '../components/api/activity.dart';
 import '../components/input.dart';
 import './sku.dart';
-import 'dart:math';
 
 class ActivitySelectSpec extends StatefulWidget {
   ActivityInfo info;
@@ -11,11 +16,9 @@ class ActivitySelectSpec extends StatefulWidget {
   String text;
   Color backgroundColor;
   List<ActivityProductSKU> skus;
-  void Function(Map<String, int> value, bool addShoppingCart) callback;
 
   ActivitySelectSpec(
       {Key key,
-      this.callback,
       this.addShoppingCart,
       this.text,
       @required this.skus,
@@ -36,10 +39,9 @@ class ActivitySelectSpec extends StatefulWidget {
 
 // 选择规格
 class ActivitySelectSpecState extends State<ActivitySelectSpec> {
-  Map<String, int> resultValue = Map();
+  Map<String, SkuTree> resultValue = Map(); //选中的值
   Map<String, int> iconValue = Map();
-  int _stockNum;
-  String skuID;
+  SkuTree selectedSku;
   NumInput numInput;
   bool keyboard = false;
   final ScrollController _controller = ScrollController();
@@ -95,13 +97,11 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
             _buyNum(context),
             Buttom(
               onTap: () {
-                if (numInput.oldNum > 0 && this.skuID != null) {
-                  resultValue[this.skuID] = numInput.oldNum;
+                if (numInput.oldNum > 0 && this.selectedSku != null) {
+                  selectedSku.num = numInput.oldNum;
+                  resultValue[selectedSku.attr] = selectedSku;
                 }
-                if (widget.callback != null) {
-                  widget.callback(resultValue, widget.addShoppingCart);
-                }
-                Navigator.pop(context);
+                _selectSpecCallback(context);
                 return true;
               },
               backgroundColor: Colors.red,
@@ -143,6 +143,66 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
     moveUp = globalKey.currentContext.size.height;
   }
 
+  // 按钮回调
+  void _selectSpecCallback(BuildContext context) async {
+    if (resultValue.length < 1) {
+      Navigator.pop(context);
+      return;
+    }
+    if (widget.addShoppingCart) {
+      ShoppingCartAddReq req = ShoppingCartAddReq(
+        activityCode: widget.info.ActivityCode,
+        items: [],
+      );
+      resultValue.forEach((key, val) {
+        req.items.add(ShoppingCartAddItem(
+          activityCode: widget.info.ActivityCode,
+          skuID: key,
+          num: val.num,
+        ));
+      });
+      StringResp resp = await ShoppingCartAPI.add(req);
+      if (resp.code == 0) {
+        showToast("购物车添加成功", duration: toastDuration);
+      } else {
+        showToast(resp.errmsg, duration: toastDuration);
+      }
+      Navigator.pop(context);
+    } else {
+      if (orderReq == null) {
+        orderReq = ShoppingCartOrderAddReq(oem: []);
+      } else {
+        orderReq.oem.clear();
+      }
+      OemOrderAddReq oemOrder = OemOrderAddReq();
+      oemOrder.userCouponCode = null;
+      oemOrder.invoiceCode = "";
+      oemOrder.invoiceCompanyName = "";
+      oemOrder.invoiceCompanyVerifyCode = "";
+      oemOrder.invoicePersonalName = "";
+      oemOrder.memo = "";
+      oemOrder.activityCode = widget.info.ActivityCode;
+      if (oemOrder.products == null) {
+        oemOrder.products = [];
+      } else {
+        oemOrder.products.clear();
+      }
+      resultValue.forEach((key, val) {
+        oemOrder.products.add(OemOrderProduct(
+          activityCode: widget.info.ActivityCode,
+          skuID: key,
+          num: val.num,
+          attr: val.attr,
+          productImg: widget.info.Imgs?.first?.src,
+          productName: widget.info.Name,
+        ));
+      });
+      orderReq.oem.add(oemOrder);
+      print(json.encode(orderReq.toJson()));
+      orderCreateNavigate(context);
+    }
+  }
+
   // 顶部控件
   Widget _buiTop(BuildContext context) {
     return Container(
@@ -154,7 +214,7 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
         children: <Widget>[
           Container(
             width: 100,
-            child: Image.network(widget.info.Imgs[0].Src, fit: BoxFit.fill),
+            child: Image.network(widget.info.Imgs[0].src, fit: BoxFit.fill),
           ),
           Container(
             margin: new EdgeInsets.fromLTRB(5, 0, 0, 0),
@@ -207,14 +267,14 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
 
   // 库存
   Widget _stock(BuildContext context) {
-    if (skuID == null || skuID.trim() == "") {
+    if (selectedSku == null || selectedSku.skuID.trim() == "") {
       return Container();
     }
     return Container(
       alignment: Alignment.centerLeft,
       margin: new EdgeInsets.only(top: 2),
       child: Text(
-        "库存: ${_stockNum}",
+        "库存: ${selectedSku?.stockNum}",
         style: TextStyle(
           fontSize: 12,
           color: Colors.grey[800],
@@ -249,17 +309,20 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
   }
 
   // 选中的SKU
-  void _selectSKU(String skuID, int stockNum) {
-    print("stockNum : ${stockNum} skuID:${skuID}");
-    var _oldSKU = this.skuID;
+  void _selectSKU(SkuTree sku) async {
+    var _oldSKU = this.selectedSku;
     if (numInput.oldNum > 0 && _oldSKU != null) {
-      resultValue[_oldSKU] = numInput.oldNum;
+      _oldSKU.num = numInput.oldNum;
+      resultValue[_oldSKU.attr] = _oldSKU;
     }
-    _stockNum = stockNum;
-    this.skuID = skuID;
+    if (sku != null) {
+      this.selectedSku = sku;
+    }
+    String attr = sku != null ? sku.attr : "";
+    int stockNum = sku != null ? sku.stockNum : 0;
     numInput?.setText(
-        resultValue[skuID] == null ? "0" : resultValue[skuID].toString());
+        resultValue[attr] == null ? "0" : resultValue[attr].num.toString());
     numInput?.maxNum = stockNum; //设置加减最大值
-    setState(() {});
+    Future.delayed(Duration.zero, () => setState(() {}));
   }
 }

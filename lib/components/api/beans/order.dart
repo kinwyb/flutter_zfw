@@ -1,4 +1,5 @@
-import './page.dart';
+import 'package:zfw/components/api/beans/common.dart';
+import 'package:zfw/components/api/beans/shoppingCart.dart';
 
 enum OrderState {
   All, //OrderStatus = 0   //所有状态
@@ -300,6 +301,127 @@ class OrderExpress {
     data['PayTime'] = this.payTime;
     data['OrderTime'] = this.orderTime;
     data['ExpressTime'] = this.expressTime;
+    return data;
+  }
+}
+
+class OemOrderAddReq {
+  String activityCode;
+  String addrCode;
+  String invoiceCode;
+  String invoiceCompanyName;
+  String invoiceCompanyVerifyCode;
+  String invoicePersonalName;
+  String memo;
+  List<String> userCouponCode;
+  List<OemOrderProduct> products;
+
+  OemOrderAddReq(
+      {this.activityCode,
+      this.addrCode,
+      this.invoiceCode,
+      this.invoiceCompanyName,
+      this.invoiceCompanyVerifyCode,
+      this.invoicePersonalName,
+      this.memo,
+      this.products,
+      this.userCouponCode});
+
+  OemOrderAddReq.fromJson(Map<String, dynamic> json) {
+    this.activityCode = json['ActivityCode'];
+    this.addrCode = json['AddrCode'];
+    this.invoiceCode = json['InvoiceCode'];
+    this.invoiceCompanyName = json['InvoiceCompanyName'];
+    this.invoiceCompanyVerifyCode = json['InvoiceCompanyVerifyCode'];
+    this.invoicePersonalName = json['InvoicePersonalName'];
+    this.memo = json['Memo'];
+    this.products = (json['Products'] as List) != null
+        ? (json['Products'] as List)
+            .map((i) => OemOrderProduct.fromJson(i))
+            .toList()
+        : null;
+
+    List<dynamic> userCouponCodeList = json['UserCouponCode'] ?? [];
+    this.userCouponCode = new List();
+    this.userCouponCode.addAll(userCouponCodeList.map((o) => o.toString()));
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['ActivityCode'] = this.activityCode;
+    data['AddrCode'] = this.addrCode;
+    data['InvoiceCode'] = this.invoiceCode;
+    data['InvoiceCompanyName'] = this.invoiceCompanyName;
+    data['InvoiceCompanyVerifyCode'] = this.invoiceCompanyVerifyCode;
+    data['InvoicePersonalName'] = this.invoicePersonalName;
+    data['Memo'] = this.memo;
+    data['Products'] = this.products != null
+        ? this.products.map((i) => i.toJson()).toList()
+        : null;
+    data['UserCouponCode'] = this.userCouponCode;
+    return data;
+  }
+}
+
+class OemOrderProduct {
+  String activityCode;
+  String skuID;
+  int num;
+  String productImg;
+  String productName;
+  String attr;
+
+  List<ShoppingCartProduct> gift;
+
+  OemOrderProduct(
+      {this.activityCode,
+      this.productImg,
+      this.productName,
+      this.skuID,
+      this.attr,
+      this.num,
+      this.gift});
+
+  OemOrderProduct.fromJson(Map<String, dynamic> json) {
+    this.activityCode = json['ActivityCode'];
+    this.skuID = json['SkuID'];
+    this.num = json['Num'];
+    this.gift = (json['Gift'] as List) != null
+        ? (json['Gift'] as List)
+            .map((i) => ShoppingCartProduct.fromJson(i))
+            .toList()
+        : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['ActivityCode'] = this.activityCode;
+    data['SkuID'] = this.skuID;
+    data['Num'] = this.num;
+    data['Gift'] =
+        this.gift != null ? this.gift.map((i) => i.toJson()).toList() : null;
+    return data;
+  }
+}
+
+class DirectBuyResp {
+  String orderNo;
+  int remainingTime;
+  Map<String, dynamic> payValue;
+
+  DirectBuyResp({this.orderNo, this.remainingTime, this.payValue});
+
+  DirectBuyResp.fromJson(Map<String, dynamic> json) {
+    this.payValue = json['PayValue'];
+    this.orderNo = json['OrderNo'];
+    this.remainingTime = json['RemainingTime'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['PayValue'] = this.payValue;
+    data['OrderNo'] = this.orderNo;
+    data['RemainingTime'] = this.remainingTime;
     return data;
   }
 }

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import '../components/api/activity.dart';
-import '../components/api/beans/img.dart';
+import '../components/api/beans/common.dart';
 import '../components/refresh.dart';
 import './imgs.dart';
 import './title.dart';
@@ -124,7 +124,7 @@ class ActivityState extends State<Activity>
       } else {
         var imgs = List<ImgInfo>();
         imgs.add(ImgInfo.fromParams(
-            Src:
+            src:
                 "https://qiniu.zhifangw.cn/O-20190105152558802194096.png?filename=MjAxOTAxMDUxNTI1NTg4MDIxOTQwOTYucG5n"));
         return new ActivityDescImages(imgs: imgs);
       }

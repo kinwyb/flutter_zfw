@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:zfw/order/create.dart';
 import '../api/request.dart';
 import '../../activity/main.dart';
 import '../../productList/main.dart';
@@ -14,7 +15,12 @@ import '../../main.dart';
 import '../../order/list.dart';
 
 final router = Router();
-final _checkLoginPath = ["/member", "/homeHead", "/shoppingCart"];
+final _checkLoginPath = [
+  "/member",
+  "/homeHead",
+  "/shoppingCart",
+  "/order/create",
+];
 
 void routerInit() {
   login("15058679668", "www123");
@@ -197,8 +203,21 @@ void _registerOrder() {
     ),
     transitionType: TransitionType.inFromRight,
   );
+  router.define(
+    "/order/create",
+    handler: Handler(
+      handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+        return new OrderCreate();
+      },
+    ),
+    transitionType: TransitionType.inFromRight,
+  );
 }
 
 void orderListNavigate(BuildContext context, int orderState) {
   navigateTo(context, "/order/list?orderState=" + orderState.toString());
+}
+
+void orderCreateNavigate(BuildContext context) {
+  navigateTo(context, "/order/create");
 }

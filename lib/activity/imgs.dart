@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import '../components/api/beans/img.dart';
+import '../components/api/beans/common.dart';
 
 // 活动详情轮播图片
 class ActivityImages extends StatelessWidget {
@@ -32,7 +32,7 @@ class ActivityImages extends StatelessWidget {
 
   Widget _swiperBuilder(BuildContext context, int index) {
     return (Image.network(
-      this.imgs[index].Src,
+      this.imgs[index].src,
       fit: BoxFit.fill,
     ));
   }
@@ -40,22 +40,19 @@ class ActivityImages extends StatelessWidget {
 
 // 商品图片
 class ActivityDescImages extends StatelessWidget {
-
   List<ImgInfo> imgs = List<ImgInfo>();
 
-  ActivityDescImages({Key key,this.imgs}):super(key:key);
+  ActivityDescImages({Key key, this.imgs}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     List<Widget> wgs = List<Widget>();
-    for(var i in imgs) {
-      var wg = Image.network(i.Src);
+    for (var i in imgs) {
+      var wg = Image.network(i.src);
       wgs.add(wg);
     }
     return Column(
       children: wgs,
     );
-
   }
-
 }

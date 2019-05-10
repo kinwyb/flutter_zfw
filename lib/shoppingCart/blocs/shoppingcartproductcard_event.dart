@@ -1,0 +1,3 @@
+enum ShoppingcartproductcardEvent {
+  Load,
+}

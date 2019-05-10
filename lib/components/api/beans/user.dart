@@ -433,3 +433,60 @@ class UserDataCount {
     return data;
   }
 }
+
+class UserAddressInfo {
+  String address;
+  String cityName;
+  String code;
+  String contactsName;
+  String contactsPhone;
+  String districtName;
+  String isDefault;
+  String provinceName;
+  int city;
+  int district;
+  int province;
+
+  UserAddressInfo(
+      {this.address,
+      this.cityName,
+      this.code,
+      this.contactsName,
+      this.contactsPhone,
+      this.districtName,
+      this.isDefault,
+      this.provinceName,
+      this.city,
+      this.district,
+      this.province});
+
+  UserAddressInfo.fromJson(Map<String, dynamic> json) {
+    this.address = json['Address'];
+    this.cityName = json['CityName'];
+    this.code = json['Code'];
+    this.contactsName = json['ContactsName'];
+    this.contactsPhone = json['ContactsPhone'];
+    this.districtName = json['DistrictName'];
+    this.isDefault = json['IsDefault'];
+    this.provinceName = json['ProvinceName'];
+    this.city = json['City'];
+    this.district = json['District'];
+    this.province = json['Province'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['Address'] = this.address;
+    data['CityName'] = this.cityName;
+    data['Code'] = this.code;
+    data['ContactsName'] = this.contactsName;
+    data['ContactsPhone'] = this.contactsPhone;
+    data['DistrictName'] = this.districtName;
+    data['IsDefault'] = this.isDefault;
+    data['ProvinceName'] = this.provinceName;
+    data['City'] = this.city;
+    data['District'] = this.district;
+    data['Province'] = this.province;
+    return data;
+  }
+}

@@ -27,6 +27,10 @@ dependencies:
   dio: ^2.1.0
   fluro: ^1.4.0
   flutter_slidable: ^0.4.9
+  oktoast: ^2.1.7
+  flutter_bloc: ^0.13.0
+  bloc: ^0.13.0
+  equatable: ^0.2.0
 
 dev_dependencies:
   flutter_test:

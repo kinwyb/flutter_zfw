@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:zfw/components/api/beans/order.dart';
 
 import './request.dart';
@@ -25,5 +27,12 @@ class OrderAPI {
       return ret;
     }
     return ret;
+  }
+
+  // 单独购买下单
+  static Future<DirectBuyResp> directBuy(OemOrderAddReq req) async {
+    var data = await HttpUtils.request("/micro/activity/order/singlebuy",
+        method: HttpUtils.POST, data: json.encode(req));
+    return new DirectBuyResp.fromJson(data);
   }
 }

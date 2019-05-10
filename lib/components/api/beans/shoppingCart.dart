@@ -1,4 +1,7 @@
-import 'package:zfw/components/api/beans/page.dart';
+import 'package:zfw/components/api/beans/common.dart';
+import 'package:zfw/components/api/beans/order.dart';
+
+export 'package:zfw/components/api/beans/order.dart';
 
 class SignleBuyShoppingCartResp {
   String errmsg;
@@ -110,7 +113,7 @@ class ShoppingCartProduct {
 
   ShoppingCartProduct.fromJson(Map<String, dynamic> json) {
     this.activityCode = json['ActivityCode'];
-    this.productImage = json['ProductImage'];
+    this.productImage = json['ProductImage'] ?? json['ProductImg'];
     this.productName = json['ProductName'];
     this.productNo = json['ProductNo'];
     this.skuID = json['SkuID'];
@@ -138,6 +141,80 @@ class ShoppingCartProduct {
     data['Stock'] = this.stock;
     data['Gift'] =
         this.gift != null ? this.gift.map((i) => i.toJson()).toList() : null;
+    return data;
+  }
+}
+
+class ShoppingCartAddReq {
+  String activityCode;
+  List<ShoppingCartAddItem> items;
+
+  ShoppingCartAddReq({this.activityCode, this.items});
+
+  ShoppingCartAddReq.fromJson(Map<String, dynamic> json) {
+    this.activityCode = json['ActivityCode'];
+    this.items = (json['Items'] as List) != null
+        ? (json['Items'] as List)
+            .map((i) => ShoppingCartAddItem.fromJson(i))
+            .toList()
+        : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['ActivityCode'] = this.activityCode;
+    data['Items'] =
+        this.items != null ? this.items.map((i) => i.toJson()).toList() : null;
+    return data;
+  }
+}
+
+class ShoppingCartAddItem {
+  String activityCode;
+  String skuID;
+  int num;
+
+  ShoppingCartAddItem({this.activityCode, this.skuID, this.num});
+
+  ShoppingCartAddItem.fromJson(Map<String, dynamic> json) {
+    this.activityCode = json['ActivityCode'];
+    this.skuID = json['SkuID'];
+    this.num = json['Num'];
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['ActivityCode'] = this.activityCode;
+    data['SkuID'] = this.skuID;
+    data['Num'] = this.num;
+    return data;
+  }
+}
+
+class ShoppingCartOrderAddReq {
+  String addrCode;
+  List<String> userCouponCode;
+  List<OemOrderAddReq> oem;
+
+  ShoppingCartOrderAddReq({this.addrCode, this.oem, this.userCouponCode});
+
+  ShoppingCartOrderAddReq.fromJson(Map<String, dynamic> json) {
+    this.addrCode = json['AddrCode'];
+    this.oem = (json['Oem'] as List) != null
+        ? (json['Oem'] as List).map((i) => OemOrderAddReq.fromJson(i)).toList()
+        : null;
+
+    List<dynamic> userCouponCodeList = json['UserCouponCode'] ?? [];
+    this.userCouponCode = new List();
+    this.userCouponCode.addAll(userCouponCodeList.map((o) => o.toString()));
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['AddrCode'] = this.addrCode;
+    data['Oem'] =
+        this.oem != null ? this.oem.map((i) => i.toJson()).toList() : null;
+    data['UserCouponCode'] = this.userCouponCode;
     return data;
   }
 }
