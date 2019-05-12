@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
-import '../components/api/home.dart';
+import 'package:zfw/components/api/home.dart';
+import 'package:zfw/home/blocs/homebanner_event.dart';
+import 'package:zfw/home/homeSizeUtil.dart';
+import 'blocs/bloc.dart';
 
 class HomeBanner extends StatefulWidget {
   @override
@@ -8,46 +12,50 @@ class HomeBanner extends StatefulWidget {
 }
 
 class BannerPageState extends State<HomeBanner> {
-  List<IndexBanner> banners = new List<IndexBanner>();
+  HomePageSizeUtil get homeSize => new HomePageSizeUtil();
+  final HomebannerBloc _bloc = new HomebannerBloc();
 
   @override
   void initState() {
     super.initState();
-    loadData();
+    _bloc.dispatch(HomebannerEvent.Load);
   }
 
-  void loadData() async {
-    var data = await HomeAPI.banners();
-    setState(() {
-      this.banners = data;
-    });
+  @override
+  void dispose() {
+    super.dispose();
+    _bloc.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
         width: MediaQuery.of(context).size.width,
-        height: 200.0,
-        child: Swiper(
-          itemBuilder: _swiperBuilder,
-          itemCount: banners.length,
-          // pagination: new SwiperPagination(
-          //     builder: DotSwiperPaginationBuilder(
-          //   color: Colors.black54,
-          //   activeColor: Colors.white,
-          // )),
-          // control: new SwiperControl(),
-          scrollDirection: Axis.horizontal,
-          autoplay: banners.length > 1,
-          loop: false,
-          onTap: (index) => print('点击了第$index个'),
+        height: homeSize.bannerHeight,
+        child: BlocBuilder<HomebannerEvent, HomebannerState>(
+          bloc: _bloc,
+          builder: (context, state) {
+            List<IndexBanner> data = state.data ?? [];
+            return Swiper(
+              itemBuilder: (context, index) {
+                return Image.network(
+                  data[index].Img,
+                  fit: BoxFit.fill,
+                );
+              },
+              itemCount: data.length,
+              // pagination: new SwiperPagination(
+              //     builder: DotSwiperPaginationBuilder(
+              //   color: Colors.black54,
+              //   activeColor: Colors.white,
+              // )),
+              // control: new SwiperControl(),
+              scrollDirection: Axis.horizontal,
+              autoplay: data.length > 1,
+              loop: false,
+              onTap: (index) => print('点击了第$index个'),
+            );
+          },
         ));
-  }
-
-  Widget _swiperBuilder(BuildContext context, int index) {
-    return (Image.network(
-      banners[index].Img,
-      fit: BoxFit.fill,
-    ));
   }
 }

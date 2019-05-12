@@ -1,10 +1,13 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zfw/home/blocs/bloc.dart';
 import './banner.dart';
 import './category.dart';
 import './brand.dart';
 import '../components/api/home.dart';
 import '../components/refresh.dart';
 import '../components/bottomNavigationBar.dart';
+import 'blocs/homebrand_bloc.dart';
 
 class HomeWidget extends StatefulWidget {
   @override
@@ -12,8 +15,7 @@ class HomeWidget extends StatefulWidget {
 }
 
 class HomeWidgetState extends State<HomeWidget> {
-  List<IndexBrand> brands = new List<IndexBrand>();
-
+  final HomebrandBloc _bloc = new HomebrandBloc();
   ScrollController _scrollController = ScrollController(); //listview的控制器
 
   int _page = 1; //加载的页数
@@ -25,7 +27,7 @@ class HomeWidgetState extends State<HomeWidget> {
     super.initState();
     isEnd = false;
     _page = 1;
-    loadData();
+    _bloc.dispatch(HomebrandEvent(1));
     _scrollController.addListener(lostenerScrollController);
   }
 
@@ -38,31 +40,11 @@ class HomeWidgetState extends State<HomeWidget> {
     }
   }
 
-  Future loadData() async {
-    if (!isEnd) {
-      var brands = await HomeAPI.brands(_page);
-      brands = brands ?? [];
-      _page++;
-      if (brands.length < 1) {
-        isEnd = true;
-        _scrollController.removeListener(lostenerScrollController);
-      }
-      setState(() {
-        this.isLoading = false;
-        this.brands.addAll(brands);
-      });
-    }
-  }
-
   // 刷新界面
-  Future<void> refresh() {
+  Future<void> refresh() async {
     _page = 1;
     isEnd = false;
-    this.brands.clear();
-    if (!_scrollController.hasListeners) {
-      _scrollController.addListener(lostenerScrollController);
-    }
-    return this.loadData();
+    _bloc.dispatch(HomebrandEvent(1));
   }
 
   @override
@@ -73,48 +55,51 @@ class HomeWidgetState extends State<HomeWidget> {
       ),
       body: RefreshIndicator(
         onRefresh: refresh,
-        child: ListView.builder(
-          itemBuilder: _buildItem,
-          itemCount: brands.length + 3,
-          controller: _scrollController,
+        child: BlocBuilder<HomebrandEvent, HomebrandState>(
+          bloc: _bloc,
+          builder: (context, state) {
+            isLoading = false;
+            isEnd = state.isEnd;
+            return ListView.builder(
+              itemBuilder: (BuildContext context, int index) {
+                if (index == 0) {
+                  return new HomeBanner();
+                } else if (index == 1) {
+                  return new HomeCategory();
+                } else if (index > state.data.length + 1) {
+                  if (isEnd) {
+                    return noMoreWidget();
+                  }
+                  return loadMoreWidget();
+                } else if (index > 1 && state.data.length > 0) {
+                  index = index - 2;
+                  return HomeBrand(brand: state.data[index]);
+                }
+                return Container();
+              },
+              itemCount: state.data.length + 3,
+              controller: _scrollController,
+            );
+          },
         ),
       ),
       bottomNavigationBar: bottomNavigationBar(context),
     );
   }
 
-  Widget _buildItem(BuildContext context, int index) {
-    if (index == 0) {
-      return new HomeBanner();
-    } else if (index == 1) {
-      return new HomeCategory(
-        showLoadMore: true,
-      );
-    } else if (index > this.brands.length + 1) {
-      if (isEnd) {
-        return noMoreWidget();
-      }
-      return loadMoreWidget();
-    } else if (index > 1 && this.brands.length > 0) {
-      index = index - 2;
-      return HomeBrand(brand: this.brands[index]);
-    }
-    return Container();
-  }
-
   // 加载更多
   Future _getMore() async {
     if (!isLoading) {
-      setState(() {
-        isLoading = true;
-      });
-      loadData();
+      isLoading = true;
+      _page++;
+      _bloc.dispatch(HomebrandEvent(_page));
     }
   }
 
   @override
   void dispose() {
     super.dispose();
+    _bloc.dispose();
     _scrollController.dispose();
   }
 }

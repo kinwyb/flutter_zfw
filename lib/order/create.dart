@@ -1,19 +1,24 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:oktoast/oktoast.dart';
 import 'dart:core';
 import 'package:zfw/components/component.dart';
-import 'package:zfw/components/component.dart' as prefix0;
+import 'package:zfw/components/router/routers.dart';
+import 'package:zfw/order/blocs/bloc.dart';
 
-final _containerMargin = EdgeInsets.only(bottom: 10);
+import 'createOrderSizeUtil.dart';
+
+final CreateOrderSizeUtil _size = new CreateOrderSizeUtil();
 
 // 创建订单
 class OrderCreate extends StatelessWidget {
+//  final CreateOrderSizeUtil _size = new CreateOrderSizeUtil();
+  final CreateorderbottomBloc _bottombloc = new CreateorderbottomBloc();
   OrderCreate({Key key}) : super(key: key) {
     String val =
-        '{"AddrCode":null,"Oem":[{"ActivityCode":"c110d2ca40ca11e9941b00163e136d45","AddrCode":null,"InvoiceCode":"","InvoiceCompanyName":"","InvoiceCompanyVerifyCode":"","InvoicePersonalName":"","Memo":"","Products":[{"ActivityCode":"c110d2ca40ca11e9941b00163e136d45","SkuID":"白色,L","Num":1,"Gift":null}],"UserCouponCode":null}],"UserCouponCode":null}';
+        '{"AddrCode":null,"Oem":[{"ActivityCode":"c110d2ca40ca11e9941b00163e136d45","AddrCode":null,"InvoiceCode":"","InvoiceCompanyName":"","InvoiceCompanyVerifyCode":"","InvoicePersonalName":"","Memo":"","OemName":"北极绒制造商","Products":[{"ActivityCode":"c110d2ca40ca11e9941b00163e136d45","price":10.2,"SkuID":"aa416ba840ca11e9941b00163e136d45","Num":2,"productImg":"https://qiniu.zhifangw.cn/19030717349388963815436830.jpg?filename=QN-MTkwMzA3MTczNDkzODg5NjM4MTU0MzY4MzAuanBn","productName":"女式弹力棉修身立体职场女神内搭基础必备衬衫","attr":"白色,L","Gift":null}],"UserCouponCode":null}],"UserCouponCode":null}';
     orderReq = ShoppingCartOrderAddReq.fromJson(json.decode(val));
   }
 
@@ -29,59 +34,52 @@ class OrderCreate extends StatelessWidget {
         color: Colors.white,
       );
     }
-    final List<Widget> listWidgets = [_top(), _addr(context), _coupon()];
+    final List<Widget> listWidgets = [_top(), _addr(context), _OrderCoupons()];
     for (var oem in orderReq.oem) {
       listWidgets.add(_OrderOem(
         data: oem,
+        bottomBloc: _bottombloc,
       ));
     }
-    listWidgets.add(_licenses(context));
+    listWidgets.add(_OrderLicenses(
+      bottomBloc: _bottombloc,
+    ));
     return Scaffold(
       appBar: AppBar(
         title: Text("提交订单"),
       ),
       body: Container(
-        color: Colors.grey,
+        color: Colors.grey[200],
         child: ListView(
           children: listWidgets,
         ),
       ),
-      bottomNavigationBar: _bottom(context),
+      bottomNavigationBar: _OrderCreateBottom(
+        bloc: _bottombloc,
+      ),
     );
   }
 
   // 顶部提醒条
-  final _topPadding = EdgeInsets.only(left: 20, top: 10, bottom: 10);
   Widget _top() {
     return Container(
-      padding: _topPadding,
-      margin: _containerMargin,
+      padding: _size.topPadding,
+      margin: _size.containerMargin,
       color: Colors.yellow[800],
       child: Row(
         children: <Widget>[
           Icon(
             Icons.notifications_active,
-            size: 18,
+            size: _size.topPaddingFontSize,
           ),
-          Text(" 请及时提交订单,商品数量有限可能会被抢空"),
+          Text(
+            " 请及时提交订单,商品数量有限可能会被抢空",
+            style: defaultFontText,
+          ),
         ],
       ),
     );
   }
-
-  // 优惠卷
-  Widget _coupon() {
-    return Container(
-      height: 40,
-      margin: _containerMargin,
-      color: Colors.white,
-    );
-  }
-
-  final TextStyle _addrFontSize = TextStyle(
-    fontSize: 18,
-    fontWeight: FontWeight.bold,
-  );
 
   // 地址栏
   Widget _addr(BuildContext context) {
@@ -90,19 +88,22 @@ class OrderCreate extends StatelessWidget {
     }
     Container def;
     def = Container(
-      child: Text("默认"),
-      padding: EdgeInsets.fromLTRB(10, 2, 10, 2),
-      margin: EdgeInsets.fromLTRB(0, 5, 30, 5),
+      child: Text(
+        "默认",
+        style: defaultFontText,
+      ),
+      padding: _size.addrDefPadding,
+      margin: _size.addrDefMargin,
       decoration: BoxDecoration(
         color: Colors.amber,
-        borderRadius: BorderRadius.circular(20),
+        borderRadius: borderRadiusCircular,
       ),
     );
     return Container(
       color: Colors.white,
-      margin: _containerMargin,
-      padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-      height: 100,
+      margin: _size.containerMargin,
+      padding: _size.addrPadding,
+      height: _size.addrHeight,
       child: Column(
         children: <Widget>[
           Expanded(
@@ -113,17 +114,17 @@ class OrderCreate extends StatelessWidget {
                     child: Container(
                       child: Text(
                         '王五',
-                        style: _addrFontSize,
+                        style: _size.addrFontText,
                         maxLines: 1,
                       ),
-                      margin: EdgeInsets.only(right: 10),
+                      margin: _size.addrNameMargin,
                     ),
                   ),
                   Wrap(
                     children: <Widget>[
                       Text(
                         '15058679668',
-                        style: _addrFontSize,
+                        style: _size.addrFontText,
                       )
                     ],
                   ),
@@ -140,6 +141,8 @@ class OrderCreate extends StatelessWidget {
                     child: Container(
                       child: Text(
                         '浙江省义乌市苏溪镇浙江省义乌市苏溪镇浙江省义乌市苏溪镇浙江省义乌市苏溪镇浙江省义乌市苏溪镇浙江省义乌市苏溪镇',
+                        style: defaultFontText,
+                        maxLines: 2,
                       ),
                     ),
                   )
@@ -151,18 +154,31 @@ class OrderCreate extends StatelessWidget {
       ),
     );
   }
+}
 
-  Widget _licenses(BuildContext context) {
-    return Container(
-      color: Colors.green,
-      height: 20,
-    );
+// 底部确认栏
+class _OrderCreateBottom extends StatefulWidget {
+  final CreateorderbottomBloc bloc;
+  _OrderCreateBottom({Key key, this.bloc}) : super(key: key);
+  @override
+  _OrderCreateBottomState createState() => _OrderCreateBottomState();
+}
+
+class _OrderCreateBottomState extends State<_OrderCreateBottom> {
+//  static CreateOrderSizeUtil get _size => new CreateOrderSizeUtil();
+  bool _checkBoxValue = true;
+
+  @override
+  void dispose() {
+    super.dispose();
+    widget?.bloc?.dispose();
   }
 
-  Widget _bottom(BuildContext context) {
+  @override
+  Widget build(BuildContext context) {
     return Container(
-      height: 60,
-      padding: EdgeInsets.only(left: 20),
+      height: _size.bottomHeight,
+      padding: _size.bottomPadding,
       decoration: BoxDecoration(
         color: Colors.white,
         border: Border(top: BorderSide(width: 0.5, color: Colors.grey)),
@@ -171,17 +187,23 @@ class OrderCreate extends StatelessWidget {
         children: <Widget>[
           Expanded(
             flex: 2,
-            child: Container(
-              alignment: Alignment.centerLeft,
-              child: Text.rich(
-                TextSpan(text: "合计: ", children: [
-                  TextSpan(
-                    text: "¥10.60",
-                    style: TextStyle(color: Colors.red),
+            child: BlocBuilder<CreateorderbottomEvent, CreateorderbottomState>(
+              bloc: widget.bloc,
+              builder: (context, state) {
+                _checkBoxValue = state.checkBoxValue;
+                return Container(
+                  alignment: Alignment.centerLeft,
+                  child: Text.rich(
+                    TextSpan(text: "合计: ", children: [
+                      TextSpan(
+                        text: "¥" + state.amount.toStringAsFixed(2),
+                        style: TextStyle(color: Colors.red),
+                      ),
+                    ]),
+                    style: _size.bottomLeftTextStyle,
                   ),
-                ]),
-                style: TextStyle(fontSize: 16),
-              ),
+                );
+              },
             ),
           ),
           Expanded(
@@ -192,12 +214,13 @@ class OrderCreate extends StatelessWidget {
                 print('确认订单');
               },
               children: <Widget>[
-                Text(
-                  "确认订单",
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 18,
+                Padding(
+                  padding: _size.bottomRightButtonPadding,
+                  child: Center(
+                    child: Text(
+                      "确认订单",
+                      style: _size.bottomRightTextStyle,
+                    ),
                   ),
                 )
               ],
@@ -209,15 +232,372 @@ class OrderCreate extends StatelessWidget {
   }
 }
 
+// 店铺商品信息
 class _OrderOem extends StatelessWidget {
+//  static CreateOrderSizeUtil get _size => new CreateOrderSizeUtil();
+
+  final CreateorderbottomBloc bottomBloc;
+
   final OemOrderAddReq data;
-  _OrderOem({Key key, this.data}) : super(key: key);
+  _OrderOem({Key key, this.data, this.bottomBloc}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    List<Widget> wgs = [
+      Container(
+        padding: _size.shopNamePadding,
+        alignment: Alignment.centerLeft,
+        child: Text(
+          data.oemName,
+          style: defaultFontText,
+        ),
+      )
+    ];
+    double amount = 0.0;
+    for (var p in data.products) {
+      wgs.add(_product(context, p));
+      amount += p.price * p.num;
+    }
+    bottomBloc.dispatch(CreateorderbottomEventAmountValue(
+      amount,
+    ));
+    // 商品总价
+    wgs.add(
+      Container(
+        height: _size.shopExtensionContainerHeight,
+        decoration: _size.shopExtensionContainerDecoration,
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  '商品总价',
+                  style: defaultFontText,
+                ),
+              ),
+            ),
+            Container(
+              alignment: Alignment.centerRight,
+              child: Text(
+                '¥' + amount.toStringAsFixed(2),
+                style: defaultFontText,
+              ),
+            )
+          ],
+        ),
+      ),
+    );
+    // 运费
+    wgs.add(
+      Container(
+        height: _size.shopExtensionContainerHeight,
+        decoration: _size.shopExtensionContainerDecoration,
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  '运费',
+                  style: defaultFontText,
+                ),
+              ),
+            ),
+            Container(
+              alignment: Alignment.centerRight,
+              child: Text(
+                '免邮 ',
+                style: defaultFontText,
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: defaultIconSize,
+              color: Colors.grey,
+            ),
+          ],
+        ),
+      ),
+    );
+    // 我要开票
+    wgs.add(
+      Container(
+        height: _size.shopExtensionContainerHeight,
+        decoration: _size.shopExtensionContainerDecoration,
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  '我要开票',
+                  style: defaultFontText,
+                ),
+              ),
+            ),
+            Container(
+              alignment: Alignment.centerRight,
+              child: Text(
+                '无 ',
+                style: defaultFontText,
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios,
+                size: defaultIconSize, color: Colors.grey),
+          ],
+        ),
+      ),
+    );
+    // 支付方式
+    wgs.add(
+      Container(
+        height: _size.shopExtensionContainerHeight,
+        decoration: _size.shopExtensionContainerDecoration,
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Container(
+                alignment: Alignment.centerLeft,
+                child: Text(
+                  '支付方式',
+                  style: defaultFontText,
+                ),
+              ),
+            ),
+            Container(
+              alignment: Alignment.centerRight,
+              child: Text(
+                '微信支付 ',
+                style: defaultFontText,
+              ),
+            ),
+            Icon(Icons.arrow_forward_ios,
+                size: defaultIconSize, color: Colors.grey),
+          ],
+        ),
+      ),
+    );
+    // 买家留言
+    wgs.add(
+      Container(
+        height: _size.shopExtensionContainerHeight,
+        child: Row(
+          children: <Widget>[
+            Container(
+              alignment: Alignment.centerLeft,
+              child: Text(
+                '买家留言:',
+                style: defaultFontText,
+              ),
+            ),
+            Expanded(
+              child: Container(
+                margin: _size.shopMemoTextFieldMargin,
+                child: TextField(
+                  textAlign: TextAlign.end,
+                  decoration: InputDecoration(
+                    hintText: '留言备注',
+                    hintStyle: defaultFontText,
+                    contentPadding: EdgeInsets.zero,
+                    border: InputBorder.none,
+                  ),
+                  style: defaultFontText,
+                  cursorWidth: 1,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+
+    return GestureDetector(
+      onTap: () {
+        FocusScope.of(context).requestFocus(FocusNode());
+      },
+      child: Container(
+        color: Colors.white,
+        padding: _size.shopPadding,
+        margin: _size.containerMargin,
+        child: Column(
+          children: wgs,
+        ),
+      ),
+    );
+  }
+
+  // 商品信息
+  Widget _product(BuildContext context, OemOrderProduct product) {
+    return Container(
+      height: _size.shopProductHeight,
+      margin: _size.shopProductMargin,
+      padding: _size.shopProductPadding,
+//      decoration: BoxDecoration(
+//        border: Border(
+//          bottom: BorderSide(width: 0.5, color: Colors.grey),
+//          top: BorderSide(width: 0.5, color: Colors.grey),
+//        ),
+//      ),
+      child: Row(
+        children: <Widget>[
+          Image.network(product.productImg),
+          Expanded(
+            child: Container(
+              margin: _size.shopProductTitleContainerMargin,
+              child: Column(
+                children: <Widget>[
+                  Container(
+                    height: _size.shopProductTitleHeight,
+                    child: Text(
+                      product.productName,
+                      style: _size.shopProductNameTextStyle,
+                      maxLines: 2,
+                    ),
+                    alignment: Alignment.centerLeft,
+                  ),
+                  Container(
+                    height: _size.shopProductPriceHeight,
+//                    color: Colors.grey,
+                    child: Text.rich(
+                      TextSpan(
+                        text: " ¥",
+                        style: _size.shopProductPriceIconTextStyle,
+                        children: [
+                          TextSpan(
+                            text: product.price.toStringAsFixed(2),
+//                            text: product.productImg.toStringAsFixed(2),
+                            style: _size.shopProductPriceTextStyle,
+                          )
+                        ],
+                      ),
+                    ),
+                    alignment: Alignment.centerLeft,
+                  ),
+                  Expanded(
+                    child: Row(
+                      children: <Widget>[
+                        Container(
+                          child: Text(
+                            product.attr,
+                            style: _size.shopProductAttrTextStyle,
+                          ),
+                          alignment: Alignment.centerLeft,
+                        ),
+                        Expanded(
+                          child: Container(
+                            alignment: Alignment.centerRight,
+                            child: Text(
+                              "x" + product.num.toString(),
+                              style: _size.shopProductAttrTextStyle,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+// 优惠卷
+class _OrderCoupons extends StatefulWidget {
+  @override
+  __OrderCouponsState createState() => __OrderCouponsState();
+}
+
+class __OrderCouponsState extends State<_OrderCoupons> {
+//  static CreateOrderSizeUtil get _size => new CreateOrderSizeUtil();
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 500,
-      margin: _containerMargin,
+      height: _size.couponHeight,
+      margin: _size.containerMargin,
+      padding: _size.couponPadding,
       color: Colors.white,
+      child: Row(
+        children: <Widget>[
+          Container(
+            margin: _size.couponLeftTextMargin,
+            child: Text(
+              '优惠卷',
+              style: defaultFontText,
+            ),
+          ),
+          Expanded(
+            child: Container(
+              alignment: Alignment.centerRight,
+              padding: _size.couponCenterPadding,
+              child: Text(
+                '暂无可用',
+                style: defaultFontText,
+              ),
+            ),
+          ),
+          Container(
+            child: Icon(
+              Icons.arrow_forward_ios,
+              color: Colors.grey,
+              size: defaultIconSize,
+            ),
+          )
+        ],
+      ),
+    );
+  }
+}
+
+// 协议栏
+class _OrderLicenses extends StatefulWidget {
+  final CreateorderbottomBloc bottomBloc;
+  _OrderLicenses({Key key, this.bottomBloc}) : super(key: key);
+  @override
+  _OrderLicensesState createState() => _OrderLicensesState();
+}
+
+class _OrderLicensesState extends State<_OrderLicenses> {
+//  static CreateOrderSizeUtil get _size => new CreateOrderSizeUtil();
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: _size.containerMargin,
+      height: _size.shopLicensesHeight,
+      child: Row(
+        children: <Widget>[
+          BlocBuilder<CreateorderbottomEvent, CreateorderbottomState>(
+            bloc: widget.bottomBloc,
+            builder: (context, state) {
+              return new CustomerCheckbox(
+                value: state.checkBoxValue,
+                width: _size.shopLicensesCheckBoxWidth,
+                onChanged: (val) {
+                  widget.bottomBloc
+                      .dispatch(CreateorderbottomEventCheckBoxValue(val));
+                },
+              );
+            },
+          ),
+          Container(
+            child: onTap(
+                Text(
+                  "智纺购物协议",
+                  style: _size.shopLicensesTextStyle,
+                ), () {
+              webViewNavigate(context, "http://www.baidu.com");
+            }),
+          ),
+          Expanded(
+            child: Container(),
+          )
+        ],
+      ),
     );
   }
 }

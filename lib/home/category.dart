@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zfw/home/blocs/bloc.dart';
+import 'package:zfw/order/createOrderSizeUtil.dart';
 import '../components/api/home.dart';
 import '../components/router/routers.dart';
+import 'homeSizeUtil.dart';
 
 const _moreText = "更多";
 const _moreImg =
@@ -8,68 +12,61 @@ const _moreImg =
 
 @immutable
 class HomeCategory extends StatefulWidget {
-  final bool showLoadMore;
-
-  HomeCategory({Key key, this.showLoadMore = false}) : super(key: key);
-
   @override
   State<StatefulWidget> createState() => new HomeCategoryState();
 }
 
 class HomeCategoryState extends State<HomeCategory> {
-  List<IndexCategory> categorys = new List<IndexCategory>();
+  final HomecategoryBloc _bloc = new HomecategoryBloc();
+  HomePageSizeUtil get homeSize => new HomePageSizeUtil();
 
   @override
   void initState() {
     super.initState();
-    loadData();
+    _bloc.dispatch(HomecategoryEvent.Load);
   }
 
-  void loadData() async {
-    var categorys = await HomeAPI.categorys();
-    this.categorys = categorys;
-    this._addMore();
-    setState(() {});
-  }
-
-  void _addMore() {
-    if (widget.showLoadMore) {
-      if (this.categorys != null && this.categorys.length < 8) {
-        this.categorys.add(IndexCategory.fromParams(
-              Img: _moreImg,
-              Name: _moreText,
-            ));
-      }
-    }
+  @override
+  void dispose() {
+    super.dispose();
+    _bloc.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 220,
-      child: GridView.builder(
-          physics: new NeverScrollableScrollPhysics(),
-          itemBuilder: _buildItem,
-          itemCount: this.categorys.length,
-          padding: new EdgeInsets.all(20.0),
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            mainAxisSpacing: 10.0,
-            crossAxisSpacing: 20.0,
-            crossAxisCount: 4,
-          )),
-    );
-  }
-
-  Widget _buildItem(BuildContext context, int index) {
-    return new _CategoryIcon(
-      category: this.categorys[index],
-      showList: index == this.categorys.length - 1,
+      height: homeSize.categoryContainerHeight,
+      child: BlocBuilder<HomecategoryEvent, HomecategoryState>(
+        bloc: _bloc,
+        builder: (context, state) {
+          List<IndexCategory> categorys = state.data ?? [];
+          if (categorys != null && categorys.length < 8) {
+            categorys.add(IndexCategory.fromParams(
+              Img: _moreImg,
+              Name: _moreText,
+            ));
+          }
+          return GridView.builder(
+            physics: new NeverScrollableScrollPhysics(),
+            itemBuilder: (BuildContext context, int index) {
+              return new _CategoryIcon(
+                category: categorys[index],
+                showList: index == categorys.length - 1,
+              );
+            },
+            itemCount: categorys.length,
+            padding: homeSize.categoryGridPadding,
+            gridDelegate: homeSize.categoryGridDelegate,
+          );
+        },
+      ),
     );
   }
 }
 
 @immutable
 class _CategoryIcon extends StatelessWidget {
+  HomePageSizeUtil get homeSize => new HomePageSizeUtil();
   final IndexCategory category;
 
   final bool showList;
@@ -83,7 +80,10 @@ class _CategoryIcon extends StatelessWidget {
       child: new Column(
         children: <Widget>[
           _buildIcon(),
-          Text(this.category.Name),
+          Text(
+            this.category.Name,
+            style: defaultFontText,
+          ),
         ],
       ),
       onTap: () {
@@ -98,9 +98,9 @@ class _CategoryIcon extends StatelessWidget {
 
   Widget _buildIcon() {
     return Container(
-      height: 50.0,
-      width: 50.0,
-      margin: EdgeInsets.fromLTRB(0, 0, 0, 5),
+      height: homeSize.categoryIconContainerSize,
+      width: homeSize.categoryIconContainerSize,
+      margin: homeSize.categoryIconMargin,
       decoration: BoxDecoration(
         color: Colors.white,
         image: new DecorationImage(
@@ -108,13 +108,6 @@ class _CategoryIcon extends StatelessWidget {
           fit: BoxFit.cover,
         ),
         shape: BoxShape.circle,
-        boxShadow: <BoxShadow>[
-          new BoxShadow(
-            offset: new Offset(0.0, 1.0),
-            blurRadius: 2.0,
-            color: const Color(0xffaaaaaa),
-          ),
-        ],
       ),
     );
   }

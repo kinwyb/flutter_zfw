@@ -33,7 +33,7 @@ class ActivitySKUState extends State<ActivitySKU> {
     return Container(
       color: widget.backgroundColor,
       constraints: BoxConstraints(
-        minHeight: 200,
+        minHeight: 110,
       ),
       alignment: Alignment.topLeft,
       // color: Colors.green,

@@ -49,10 +49,12 @@ class ActivityBottomBar extends StatelessWidget {
         showModalBottomSheet(
             context: context,
             builder: (context) {
-              return ActivitySelectSpec(
-                info: info,
-                skus: skus,
-                addShoppingCart: true,
+              return Scaffold(
+                body: ActivitySelectSpec(
+                  info: info,
+                  skus: skus,
+                  addShoppingCart: true,
+                ),
               );
             });
       },
@@ -67,10 +69,12 @@ class ActivityBottomBar extends StatelessWidget {
         showModalBottomSheet(
             context: context,
             builder: (context) {
-              return ActivitySelectSpec(
-                info: info,
-                skus: skus,
-                addShoppingCart: false,
+              return Scaffold(
+                body: ActivitySelectSpec(
+                  info: info,
+                  skus: skus,
+                  addShoppingCart: false,
+                ),
               );
             });
       },

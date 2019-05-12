@@ -309,6 +309,7 @@ class OemOrderAddReq {
   String activityCode;
   String addrCode;
   String invoiceCode;
+  String oemName;
   String invoiceCompanyName;
   String invoiceCompanyVerifyCode;
   String invoicePersonalName;
@@ -335,6 +336,7 @@ class OemOrderAddReq {
     this.invoiceCompanyVerifyCode = json['InvoiceCompanyVerifyCode'];
     this.invoicePersonalName = json['InvoicePersonalName'];
     this.memo = json['Memo'];
+    this.oemName = json['OemName'];
     this.products = (json['Products'] as List) != null
         ? (json['Products'] as List)
             .map((i) => OemOrderProduct.fromJson(i))
@@ -355,6 +357,7 @@ class OemOrderAddReq {
     data['InvoiceCompanyVerifyCode'] = this.invoiceCompanyVerifyCode;
     data['InvoicePersonalName'] = this.invoicePersonalName;
     data['Memo'] = this.memo;
+    data['OemName'] = this.oemName;
     data['Products'] = this.products != null
         ? this.products.map((i) => i.toJson()).toList()
         : null;
@@ -370,6 +373,7 @@ class OemOrderProduct {
   String productImg;
   String productName;
   String attr;
+  double price;
 
   List<ShoppingCartProduct> gift;
 
@@ -379,6 +383,7 @@ class OemOrderProduct {
       this.productName,
       this.skuID,
       this.attr,
+      this.price,
       this.num,
       this.gift});
 
@@ -386,6 +391,10 @@ class OemOrderProduct {
     this.activityCode = json['ActivityCode'];
     this.skuID = json['SkuID'];
     this.num = json['Num'];
+    this.productImg = json['productImg'];
+    this.productName = json['productName'];
+    this.attr = json['attr'];
+    this.price = json['price'];
     this.gift = (json['Gift'] as List) != null
         ? (json['Gift'] as List)
             .map((i) => ShoppingCartProduct.fromJson(i))
@@ -398,6 +407,10 @@ class OemOrderProduct {
     data['ActivityCode'] = this.activityCode;
     data['SkuID'] = this.skuID;
     data['Num'] = this.num;
+    data['productImg'] = this.productImg;
+    data['productName'] = this.productName;
+    data['attr'] = this.attr;
+    data['price'] = this.price;
     data['Gift'] =
         this.gift != null ? this.gift.map((i) => i.toJson()).toList() : null;
     return data;

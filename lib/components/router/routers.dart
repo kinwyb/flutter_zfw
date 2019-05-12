@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
 import 'package:zfw/order/create.dart';
+import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
 import '../api/request.dart';
 import '../../activity/main.dart';
 import '../../productList/main.dart';
@@ -56,6 +57,24 @@ void _registerHome() {
     handler: Handler(
       handlerFunc: (BuildContext context, Map<String, List<String>> params) {
         return new ShoppingCartApp();
+      },
+    ),
+    transitionType: TransitionType.inFromRight,
+  );
+  router.define(
+    "/webview",
+    handler: Handler(
+      handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+        String url = params["url"].first ?? "";
+        if (url.isNotEmpty) {
+          url = utf8.decode(base64Decode(url));
+        }
+        return new WebviewScaffold(
+          url: url,
+          appBar: new AppBar(
+            title: new Text("Widget webview"),
+          ),
+        );
       },
     ),
     transitionType: TransitionType.inFromRight,
@@ -220,4 +239,8 @@ void orderListNavigate(BuildContext context, int orderState) {
 
 void orderCreateNavigate(BuildContext context) {
   navigateTo(context, "/order/create");
+}
+
+void webViewNavigate(BuildContext context, String url) {
+  navigateTo(context, "/webview?url=" + base64UrlEncode(utf8.encode(url)));
 }

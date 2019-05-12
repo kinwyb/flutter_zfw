@@ -43,29 +43,17 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
   Map<String, int> iconValue = Map();
   SkuTree selectedSku;
   NumInput numInput;
-  bool keyboard = false;
   final ScrollController _controller = ScrollController();
-  final GlobalKey globalKey = GlobalKey();
-  double moveUp = 1000;
   FocusNode _focusNode = new FocusNode();
-  VoidCallback _focusNodeListen;
-  // double _currentPosition = 0.0;
 
   @override
   void dispose() {
     super.dispose();
     _controller.dispose();
-    _focusNode.removeListener(_focusNodeListen);
     _focusNode.dispose();
   }
 
   ActivitySelectSpecState(Color backgroundColor) {
-    _focusNodeListen = () {
-      _gridKey();
-      keyboard = _focusNode.hasFocus;
-      setState(() {});
-    };
-    _focusNode.addListener(_focusNodeListen);
     numInput = NumInput(
       text: "0",
       backgroundColor: backgroundColor,
@@ -78,7 +66,7 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
   Widget build(BuildContext context) {
     return GestureDetector(
       onTap: () {
-        if (keyboard) {
+        if (_focusNode.hasFocus) {
           _focusNode.unfocus();
         }
         return false;
@@ -89,7 +77,6 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
           children: <Widget>[
             _buiTop(context),
             ActivitySKU(
-              key: globalKey,
               sku: widget.skus,
               backgroundColor: widget.backgroundColor,
               selectCallBack: _selectSKU,
@@ -115,32 +102,10 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
                     ))
               ],
             ),
-            _keyboardContainer(context)
           ],
         ),
       ),
     );
-  }
-
-  Widget _keyboardContainer(BuildContext context) {
-    var move = MediaQuery.of(context).viewInsets.bottom;
-    if (keyboard) {
-      _controller
-          .animateTo(moveUp,
-              duration: Duration(milliseconds: 200), curve: Curves.easeOut)
-          .then((Null) {
-        // print(_controller.offset);
-      });
-      return Container(
-        height: move,
-      );
-    } else {
-      return Container();
-    }
-  }
-
-  void _gridKey() {
-    moveUp = globalKey.currentContext.size.height;
   }
 
   // 按钮回调
@@ -181,6 +146,7 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
       oemOrder.invoiceCompanyVerifyCode = "";
       oemOrder.invoicePersonalName = "";
       oemOrder.memo = "";
+      oemOrder.oemName = widget.info.BrandName;
       oemOrder.activityCode = widget.info.ActivityCode;
       if (oemOrder.products == null) {
         oemOrder.products = [];
@@ -190,9 +156,10 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
       resultValue.forEach((key, val) {
         oemOrder.products.add(OemOrderProduct(
           activityCode: widget.info.ActivityCode,
-          skuID: key,
+          skuID: val.skuID,
           num: val.num,
-          attr: val.attr,
+          attr: key,
+          price: widget.info.SingleBuyPrice,
           productImg: widget.info.Imgs?.first?.src,
           productName: widget.info.Name,
         ));

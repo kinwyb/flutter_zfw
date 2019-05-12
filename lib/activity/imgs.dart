@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
+import 'package:zfw/components/adapt.dart';
 import '../components/api/beans/common.dart';
 
 // 活动详情轮播图片
@@ -12,7 +13,7 @@ class ActivityImages extends StatelessWidget {
   Widget build(BuildContext context) {
     return Container(
         width: MediaQuery.of(context).size.width,
-        height: 400.0,
+        height: Adapt.px(620),
         child: Swiper(
           itemBuilder: _swiperBuilder,
           itemCount: this.imgs.length,

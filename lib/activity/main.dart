@@ -67,6 +67,7 @@ class ActivityState extends State<Activity>
       ),
       body: body(),
       bottomNavigationBar: bottomBar,
+      resizeToAvoidBottomPadding: true,
     );
   }
 
