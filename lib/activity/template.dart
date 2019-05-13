@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:zfw/components/adapt.dart';
 import '../components/api/activity.dart';
+import 'activitySizeUtil.dart';
 
 class ActivityTemplateWidget extends StatelessWidget {
-  List<ActivityTemplate> template;
+  final List<ActivityTemplate> template;
+  ActivitySizeUtil get _size => getActivitySizeUtil();
 
   ActivityTemplateWidget({Key key, this.template}) : super(key: key);
 
@@ -16,18 +19,14 @@ class ActivityTemplateWidget extends StatelessWidget {
           style: TextStyle(
             color: Colors.red,
           ),
-          children: [
-            TextSpan(
-                text: i.Title,
-                style: TextStyle(fontSize: 14.0, color: Colors.grey[700]))
-          ],
+          children: [TextSpan(text: i.Title, style: _size.templateTextStyle)],
         ),
       );
       wgs.add(wg);
     }
     var wrap = Wrap(
-      spacing: 50.0, // gap between adjacent chips
-      runSpacing: 6.0, // gap between lines
+      spacing: Adapt.px(50.0), // gap between adjacent chips
+      runSpacing: Adapt.px(12.0), // gap between lines
       children: wgs,
     );
     return GestureDetector(
@@ -36,8 +35,7 @@ class ActivityTemplateWidget extends StatelessWidget {
             context: context,
             builder: (context) {
               return Container(
-                width: MediaQuery.of(context).size.width,
-                padding: new EdgeInsets.fromLTRB(10, 20, 10, 30),
+                padding: _size.templateShowModalPadding,
                 child: BottomSheet(
                   builder: (context) {
                     return _bottomSheetWidget(context);
@@ -48,8 +46,8 @@ class ActivityTemplateWidget extends StatelessWidget {
             });
       },
       child: Container(
-          padding: new EdgeInsets.all(10),
-          margin: new EdgeInsets.fromLTRB(0, 0, 0, 10),
+          padding: _size.templateContainerPadding,
+          margin: _size.templateContainerMargin,
           color: Colors.white,
           child: Row(
             mainAxisAlignment: MainAxisAlignment.end,
@@ -58,7 +56,7 @@ class ActivityTemplateWidget extends StatelessWidget {
                 child: wrap,
               ),
               Container(
-                width: 20,
+                width: _size.templateContainerIconWidth,
                 child: Icon(Icons.chevron_right),
               ),
             ],
@@ -70,16 +68,15 @@ class ActivityTemplateWidget extends StatelessWidget {
     return Column(
       children: <Widget>[
         new Container(
-          width: MediaQuery.of(context).size.width,
-          padding: new EdgeInsets.fromLTRB(0, 0, 0, 10),
-          margin: new EdgeInsets.fromLTRB(0, 0, 0, 5),
+          padding: _size.templateShowModalContainerPadding,
+          margin: _size.templateShowModalContainerMargin,
           decoration: BoxDecoration(
               border: new Border(
             bottom: BorderSide(width: 2, color: Colors.grey[300]),
           )),
           child: Text(
             '服务说明',
-            style: TextStyle(fontSize: 22),
+            style: _size.templateShowModalContainerTitleTextStyle,
             textAlign: TextAlign.center,
           ),
         ),
@@ -94,12 +91,12 @@ class ActivityTemplateWidget extends StatelessWidget {
 
   Widget _bootomSheetWidgetItem(BuildContext context, int index) {
     return Container(
-      margin: new EdgeInsets.fromLTRB(0, 5, 0, 5),
+      margin: _size.templateShowModalContainerContentMargin,
       child: Column(
         children: <Widget>[
           Container(
               alignment: Alignment.centerLeft,
-              padding: new EdgeInsets.fromLTRB(10, 10, 10, 5),
+              padding: _size.templateShowModalContainerContentTitlePadding,
               child: Text.rich(
                 TextSpan(
                   text: "• ",
@@ -109,20 +106,18 @@ class ActivityTemplateWidget extends StatelessWidget {
                   children: [
                     TextSpan(
                         text: this.template[index].Title,
-                        style: TextStyle(fontSize: 16.0, color: Colors.black))
+                        style: _size
+                            .templateShowModalContainerContentTitleTextStyle)
                   ],
                 ),
               )),
           Container(
             alignment: Alignment.centerLeft,
-            padding: new EdgeInsets.fromLTRB(22, 0, 22, 0),
+            padding: _size.templateShowModalContainerContentDataPadding,
             // color: Colors.green,
             child: Text(
               this.template[index].Contents,
-              style: TextStyle(
-                fontSize: 14.0,
-                color: Colors.grey,
-              ),
+              style: _size.templateShowModalContainerContentDataTextStyle,
             ),
           ),
         ],

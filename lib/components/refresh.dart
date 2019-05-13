@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:zfw/components/adapt.dart';
-import 'package:zfw/order/createOrderSizeUtil.dart';
+import 'adapt.dart';
 
 final _loadMorePadding = EdgeInsets.all(Adapt.px(20));
 
@@ -15,7 +15,7 @@ Widget loadMoreWidget() {
         children: <Widget>[
           Text(
             '加载中...     ',
-            style: defaultFontText,
+            style: defaultFontTextStyle,
           ),
           CircularProgressIndicator(
             strokeWidth: 1.0,
@@ -39,7 +39,7 @@ Widget loading(BuildContext context, bool showLoading,
           children: <Widget>[
             Text(
               '加载中...     ',
-              style: defaultFontText,
+              style: defaultFontTextStyle,
             ),
             CircularProgressIndicator(
               strokeWidth: 1.0,
@@ -64,7 +64,7 @@ Widget noMoreWidget() {
         children: <Widget>[
           Text(
             '没有更多了     ',
-            style: defaultFontText,
+            style: defaultFontTextStyle,
           )
         ],
       ),

@@ -12,7 +12,7 @@ class HomeBanner extends StatefulWidget {
 }
 
 class BannerPageState extends State<HomeBanner> {
-  HomePageSizeUtil get homeSize => new HomePageSizeUtil();
+  HomePageSizeUtil get homeSize => getHomePageSizeUtil();
   final HomebannerBloc _bloc = new HomebannerBloc();
 
   @override

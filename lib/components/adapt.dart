@@ -1,6 +1,12 @@
 import 'package:flutter/material.dart';
 import 'dart:ui';
 
+final borderRadiusCircular = BorderRadius.circular(50);
+final defaultFontTextStyle = TextStyle(
+  fontSize: Adapt.px(28),
+);
+final defaultIconSize = Adapt.px(36);
+
 class Adapt {
   static MediaQueryData mediaQuery = MediaQueryData.fromWindow(window);
   static double _width = mediaQuery.size.width;

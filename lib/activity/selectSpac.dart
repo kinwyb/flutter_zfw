@@ -1,5 +1,5 @@
-import 'dart:convert';
 import 'dart:core';
+import 'dart:core' as prefix0;
 import 'package:flutter/material.dart';
 import 'package:oktoast/oktoast.dart';
 import 'package:zfw/components/api/shoppingCart.dart';
@@ -9,6 +9,7 @@ import '../components/iconTitle.dart';
 import '../components/api/activity.dart';
 import '../components/input.dart';
 import './sku.dart';
+import 'dart:ui';
 
 class ActivitySelectSpec extends StatefulWidget {
   ActivityInfo info;
@@ -43,66 +44,58 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
   Map<String, int> iconValue = Map();
   SkuTree selectedSku;
   NumInput numInput;
-  final ScrollController _controller = ScrollController();
-  FocusNode _focusNode = new FocusNode();
-
-  @override
-  void dispose() {
-    super.dispose();
-    _controller.dispose();
-    _focusNode.dispose();
-  }
 
   ActivitySelectSpecState(Color backgroundColor) {
     numInput = NumInput(
       text: "0",
       backgroundColor: backgroundColor,
-      focusNode: this._focusNode,
       minNum: 0,
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    var wrap = Wrap(
+      children: <Widget>[
+        _buiTop(context),
+        ActivitySKU(
+          sku: widget.skus,
+          backgroundColor: widget.backgroundColor,
+          selectCallBack: _selectSKU,
+        ),
+        _buyNum(context),
+        Buttom(
+          onTap: () {
+            if (numInput.oldNum > 0 && this.selectedSku != null) {
+              selectedSku.num = numInput.oldNum;
+              resultValue[selectedSku.attr] = selectedSku;
+            }
+            _selectSpecCallback(context);
+            return true;
+          },
+          backgroundColor: Colors.red,
+          children: <Widget>[
+            Container(
+                alignment: Alignment.center,
+                height: 50,
+                child: Text(
+                  widget.text,
+                  style: TextStyle(fontSize: 18, color: Colors.white),
+                ))
+          ],
+        ),
+      ],
+    );
     return GestureDetector(
       onTap: () {
-        if (_focusNode.hasFocus) {
-          _focusNode.unfocus();
-        }
-        return false;
+        FocusScope.of(context).requestFocus(FocusNode());
       },
-      child: SingleChildScrollView(
-        controller: _controller,
-        child: Wrap(
-          children: <Widget>[
-            _buiTop(context),
-            ActivitySKU(
-              sku: widget.skus,
-              backgroundColor: widget.backgroundColor,
-              selectCallBack: _selectSKU,
-            ),
-            _buyNum(context),
-            Buttom(
-              onTap: () {
-                if (numInput.oldNum > 0 && this.selectedSku != null) {
-                  selectedSku.num = numInput.oldNum;
-                  resultValue[selectedSku.attr] = selectedSku;
-                }
-                _selectSpecCallback(context);
-                return true;
-              },
-              backgroundColor: Colors.red,
-              children: <Widget>[
-                Container(
-                    alignment: Alignment.center,
-                    height: 50,
-                    child: Text(
-                      widget.text,
-                      style: TextStyle(fontSize: 18, color: Colors.white),
-                    ))
-              ],
-            ),
-          ],
+      child: Container(
+        padding:
+            EdgeInsets.only(bottom: MediaQuery.of(context).viewInsets.bottom),
+        color: widget.backgroundColor,
+        child: SingleChildScrollView(
+          child: wrap,
         ),
       ),
     );
@@ -165,7 +158,6 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
         ));
       });
       orderReq.oem.add(oemOrder);
-      print(json.encode(orderReq.toJson()));
       orderCreateNavigate(context);
     }
   }
@@ -175,7 +167,7 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
     return Container(
       height: 100,
       padding: new EdgeInsets.fromLTRB(10, 10, 10, 5),
-      // color: Colors.purple,
+//      color: Colors.purple,
       color: widget.backgroundColor,
       child: Row(
         children: <Widget>[
@@ -221,7 +213,7 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
                           color: Colors.grey[800],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 )
               ],
@@ -255,7 +247,7 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
     return Container(
       height: 60,
       padding: new EdgeInsets.fromLTRB(10, 5, 10, 2),
-      // color: Colors.yellow,
+//      color: Colors.yellow,
       color: widget.backgroundColor,
       child: Row(
         children: <Widget>[

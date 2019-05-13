@@ -2,18 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_swiper/flutter_swiper.dart';
 import 'package:zfw/components/adapt.dart';
 import '../components/api/beans/common.dart';
+import 'activitySizeUtil.dart';
 
 // 活动详情轮播图片
 class ActivityImages extends StatelessWidget {
-  List<ImgInfo> imgs = List<ImgInfo>();
+  final List<ImgInfo> imgs;
+  ActivitySizeUtil get _size => getActivitySizeUtil();
 
   ActivityImages({Key key, this.imgs}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-        width: MediaQuery.of(context).size.width,
-        height: Adapt.px(620),
+        height: _size.imgContainerHeight,
         child: Swiper(
           itemBuilder: _swiperBuilder,
           itemCount: this.imgs.length,
@@ -41,7 +42,7 @@ class ActivityImages extends StatelessWidget {
 
 // 商品图片
 class ActivityDescImages extends StatelessWidget {
-  List<ImgInfo> imgs = List<ImgInfo>();
+  final List<ImgInfo> imgs;
 
   ActivityDescImages({Key key, this.imgs}) : super(key: key);
 

@@ -6,20 +6,26 @@ import 'package:oktoast/oktoast.dart';
 import 'dart:core';
 import 'package:zfw/components/component.dart';
 import 'package:zfw/components/router/routers.dart';
+import 'package:zfw/components/adapt.dart';
 import 'package:zfw/order/blocs/bloc.dart';
 
 import 'createOrderSizeUtil.dart';
 
-final CreateOrderSizeUtil _size = new CreateOrderSizeUtil();
+// 订单来源
+enum OrderFrom {
+  ShoppingCart, // 购物车
+  DirectBuy, // 直购
+}
 
 // 创建订单
 class OrderCreate extends StatelessWidget {
-//  final CreateOrderSizeUtil _size = new CreateOrderSizeUtil();
+  final CreateOrderSizeUtil _size = getCreateOrderSizeUtil();
   final CreateorderbottomBloc _bottombloc = new CreateorderbottomBloc();
-  OrderCreate({Key key}) : super(key: key) {
-    String val =
-        '{"AddrCode":null,"Oem":[{"ActivityCode":"c110d2ca40ca11e9941b00163e136d45","AddrCode":null,"InvoiceCode":"","InvoiceCompanyName":"","InvoiceCompanyVerifyCode":"","InvoicePersonalName":"","Memo":"","OemName":"北极绒制造商","Products":[{"ActivityCode":"c110d2ca40ca11e9941b00163e136d45","price":10.2,"SkuID":"aa416ba840ca11e9941b00163e136d45","Num":2,"productImg":"https://qiniu.zhifangw.cn/19030717349388963815436830.jpg?filename=QN-MTkwMzA3MTczNDkzODg5NjM4MTU0MzY4MzAuanBn","productName":"女式弹力棉修身立体职场女神内搭基础必备衬衫","attr":"白色,L","Gift":null}],"UserCouponCode":null}],"UserCouponCode":null}';
-    orderReq = ShoppingCartOrderAddReq.fromJson(json.decode(val));
+  final OrderFrom from;
+  OrderCreate({Key key, this.from = OrderFrom.DirectBuy}) : super(key: key) {
+//    String val =
+//        '{"AddrCode":null,"Oem":[{"ActivityCode":"c110d2ca40ca11e9941b00163e136d45","AddrCode":null,"InvoiceCode":"","InvoiceCompanyName":"","InvoiceCompanyVerifyCode":"","InvoicePersonalName":"","Memo":"","OemName":"北极绒制造商","Products":[{"ActivityCode":"c110d2ca40ca11e9941b00163e136d45","price":10.2,"SkuID":"aa416ba840ca11e9941b00163e136d45","Num":2,"productImg":"https://qiniu.zhifangw.cn/19030717349388963815436830.jpg?filename=QN-MTkwMzA3MTczNDkzODg5NjM4MTU0MzY4MzAuanBn","productName":"女式弹力棉修身立体职场女神内搭基础必备衬衫","attr":"白色,L","Gift":null}],"UserCouponCode":null}],"UserCouponCode":null}';
+//    orderReq = ShoppingCartOrderAddReq.fromJson(json.decode(val));
   }
 
   @override
@@ -56,6 +62,7 @@ class OrderCreate extends StatelessWidget {
       ),
       bottomNavigationBar: _OrderCreateBottom(
         bloc: _bottombloc,
+        from: from,
       ),
     );
   }
@@ -74,7 +81,7 @@ class OrderCreate extends StatelessWidget {
           ),
           Text(
             " 请及时提交订单,商品数量有限可能会被抢空",
-            style: defaultFontText,
+            style: defaultFontTextStyle,
           ),
         ],
       ),
@@ -90,7 +97,7 @@ class OrderCreate extends StatelessWidget {
     def = Container(
       child: Text(
         "默认",
-        style: defaultFontText,
+        style: defaultFontTextStyle,
       ),
       padding: _size.addrDefPadding,
       margin: _size.addrDefMargin,
@@ -141,7 +148,7 @@ class OrderCreate extends StatelessWidget {
                     child: Container(
                       child: Text(
                         '浙江省义乌市苏溪镇浙江省义乌市苏溪镇浙江省义乌市苏溪镇浙江省义乌市苏溪镇浙江省义乌市苏溪镇浙江省义乌市苏溪镇',
-                        style: defaultFontText,
+                        style: defaultFontTextStyle,
                         maxLines: 2,
                       ),
                     ),
@@ -159,13 +166,14 @@ class OrderCreate extends StatelessWidget {
 // 底部确认栏
 class _OrderCreateBottom extends StatefulWidget {
   final CreateorderbottomBloc bloc;
-  _OrderCreateBottom({Key key, this.bloc}) : super(key: key);
+  final OrderFrom from;
+  _OrderCreateBottom({Key key, this.bloc, this.from}) : super(key: key);
   @override
   _OrderCreateBottomState createState() => _OrderCreateBottomState();
 }
 
 class _OrderCreateBottomState extends State<_OrderCreateBottom> {
-//  static CreateOrderSizeUtil get _size => new CreateOrderSizeUtil();
+  CreateOrderSizeUtil get _size => getCreateOrderSizeUtil();
   bool _checkBoxValue = true;
 
   @override
@@ -234,7 +242,7 @@ class _OrderCreateBottomState extends State<_OrderCreateBottom> {
 
 // 店铺商品信息
 class _OrderOem extends StatelessWidget {
-//  static CreateOrderSizeUtil get _size => new CreateOrderSizeUtil();
+  static CreateOrderSizeUtil get _size => getCreateOrderSizeUtil();
 
   final CreateorderbottomBloc bottomBloc;
 
@@ -248,7 +256,7 @@ class _OrderOem extends StatelessWidget {
         alignment: Alignment.centerLeft,
         child: Text(
           data.oemName,
-          style: defaultFontText,
+          style: defaultFontTextStyle,
         ),
       )
     ];
@@ -272,7 +280,7 @@ class _OrderOem extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   '商品总价',
-                  style: defaultFontText,
+                  style: defaultFontTextStyle,
                 ),
               ),
             ),
@@ -280,7 +288,7 @@ class _OrderOem extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: Text(
                 '¥' + amount.toStringAsFixed(2),
-                style: defaultFontText,
+                style: defaultFontTextStyle,
               ),
             )
           ],
@@ -299,7 +307,7 @@ class _OrderOem extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   '运费',
-                  style: defaultFontText,
+                  style: defaultFontTextStyle,
                 ),
               ),
             ),
@@ -307,7 +315,7 @@ class _OrderOem extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: Text(
                 '免邮 ',
-                style: defaultFontText,
+                style: defaultFontTextStyle,
               ),
             ),
             Icon(
@@ -331,7 +339,7 @@ class _OrderOem extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   '我要开票',
-                  style: defaultFontText,
+                  style: defaultFontTextStyle,
                 ),
               ),
             ),
@@ -339,7 +347,7 @@ class _OrderOem extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: Text(
                 '无 ',
-                style: defaultFontText,
+                style: defaultFontTextStyle,
               ),
             ),
             Icon(Icons.arrow_forward_ios,
@@ -360,7 +368,7 @@ class _OrderOem extends StatelessWidget {
                 alignment: Alignment.centerLeft,
                 child: Text(
                   '支付方式',
-                  style: defaultFontText,
+                  style: defaultFontTextStyle,
                 ),
               ),
             ),
@@ -368,7 +376,7 @@ class _OrderOem extends StatelessWidget {
               alignment: Alignment.centerRight,
               child: Text(
                 '微信支付 ',
-                style: defaultFontText,
+                style: defaultFontTextStyle,
               ),
             ),
             Icon(Icons.arrow_forward_ios,
@@ -387,7 +395,7 @@ class _OrderOem extends StatelessWidget {
               alignment: Alignment.centerLeft,
               child: Text(
                 '买家留言:',
-                style: defaultFontText,
+                style: defaultFontTextStyle,
               ),
             ),
             Expanded(
@@ -397,11 +405,11 @@ class _OrderOem extends StatelessWidget {
                   textAlign: TextAlign.end,
                   decoration: InputDecoration(
                     hintText: '留言备注',
-                    hintStyle: defaultFontText,
+                    hintStyle: defaultFontTextStyle,
                     contentPadding: EdgeInsets.zero,
                     border: InputBorder.none,
                   ),
-                  style: defaultFontText,
+                  style: defaultFontTextStyle,
                   cursorWidth: 1,
                 ),
               ),
@@ -512,7 +520,7 @@ class _OrderCoupons extends StatefulWidget {
 }
 
 class __OrderCouponsState extends State<_OrderCoupons> {
-//  static CreateOrderSizeUtil get _size => new CreateOrderSizeUtil();
+  CreateOrderSizeUtil get _size => getCreateOrderSizeUtil();
 
   @override
   Widget build(BuildContext context) {
@@ -527,7 +535,7 @@ class __OrderCouponsState extends State<_OrderCoupons> {
             margin: _size.couponLeftTextMargin,
             child: Text(
               '优惠卷',
-              style: defaultFontText,
+              style: defaultFontTextStyle,
             ),
           ),
           Expanded(
@@ -536,7 +544,7 @@ class __OrderCouponsState extends State<_OrderCoupons> {
               padding: _size.couponCenterPadding,
               child: Text(
                 '暂无可用',
-                style: defaultFontText,
+                style: defaultFontTextStyle,
               ),
             ),
           ),
@@ -562,7 +570,7 @@ class _OrderLicenses extends StatefulWidget {
 }
 
 class _OrderLicensesState extends State<_OrderLicenses> {
-//  static CreateOrderSizeUtil get _size => new CreateOrderSizeUtil();
+  CreateOrderSizeUtil get _size => getCreateOrderSizeUtil();
 
   @override
   Widget build(BuildContext context) {
@@ -590,7 +598,7 @@ class _OrderLicensesState extends State<_OrderLicenses> {
                   "智纺购物协议",
                   style: _size.shopLicensesTextStyle,
                 ), () {
-              webViewNavigate(context, "http://www.baidu.com");
+              webViewNavigate(context, "https://www.baidu.com");
             }),
           ),
           Expanded(

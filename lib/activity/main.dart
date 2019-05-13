@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zfw/activity/bloc.dart';
+import 'package:zfw/components/adapt.dart';
 import '../components/api/activity.dart';
 import '../components/api/beans/common.dart';
 import '../components/refresh.dart';
@@ -6,6 +9,7 @@ import './imgs.dart';
 import './title.dart';
 import './template.dart';
 import './bottomBar.dart';
+import 'activitySizeUtil.dart';
 
 @immutable
 class Activity extends StatefulWidget {
@@ -14,35 +18,24 @@ class Activity extends StatefulWidget {
   Activity({Key key, this.activityCode}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => ActivityState(this.activityCode);
+  State<StatefulWidget> createState() => ActivityState();
 }
 
 class ActivityState extends State<Activity>
     with SingleTickerProviderStateMixin {
-  String activityCode;
+  ActivitySizeUtil get _size => getActivitySizeUtil();
+  final ActivityinfoBloc _bloc = new ActivityinfoBloc();
 
   ActivityInfo info;
-  List<ActivityProductSKU> skus;
-
-  final ActivityBottomBar bottomBar = new ActivityBottomBar();
-
-  ActivityState(this.activityCode);
 
   List<String> tabList = ['详情', '质检报告'];
   TabController mController;
-
-  void loadData() async {
-    this.info = await ActivityAPI.info(activityCode);
-    this.skus = await ActivityAPI.sku(activityCode, this.info.ProductNo);
-    this.bottomBar.info = this.info;
-    this.bottomBar.skus = skus;
-    setState(() {});
-  }
 
   @override
   void dispose() {
     super.dispose();
     mController.dispose();
+    _bloc.dispose();
   }
 
   @override
@@ -53,22 +46,34 @@ class ActivityState extends State<Activity>
       length: 2,
     );
     mController.addListener(() {
-      setState(() {});
+      if (mounted) {
+        setState(() {});
+      }
     });
-    loadData();
+    _bloc.dispatch(ActivityinfoEvent(widget.activityCode));
   }
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      backgroundColor: Colors.grey[100],
-      appBar: AppBar(
-        title: Text('商品详情'),
-      ),
-      body: body(),
-      bottomNavigationBar: bottomBar,
-      resizeToAvoidBottomPadding: true,
-    );
+    return BlocBuilder<ActivityinfoEvent, ActivityinfoState>(
+        bloc: _bloc,
+        builder: (context, state) {
+          this.info = state.data;
+          if (info == null) {
+            //没有内容
+            return Container();
+          }
+          return Scaffold(
+            backgroundColor: Colors.grey[100],
+            appBar: AppBar(
+              title: Text('商品详情'),
+            ),
+            body: body(),
+            bottomNavigationBar: new ActivityBottomBar(
+              info: this.info,
+            ),
+          );
+        });
   }
 
   Widget body() {
@@ -93,20 +98,17 @@ class ActivityState extends State<Activity>
     } else if (index == 3) {
       return Container(
         color: Colors.white,
-        height: 38.0,
+        height: _size.tabBarHeight,
         child: TabBar(
           isScrollable: false,
           //是否可以滚动
           controller: mController,
           labelColor: Colors.black,
           unselectedLabelColor: Color(0xff666666),
-          labelStyle: TextStyle(fontSize: 12.0),
+          labelStyle: defaultFontTextStyle,
           tabs: tabList.map((item) {
-            return Container(
-              width: (MediaQuery.of(context).size.width - 60) / 2,
-              child: Tab(
-                text: item,
-              ),
+            return Tab(
+              text: item,
             );
           }).toList(),
         ),

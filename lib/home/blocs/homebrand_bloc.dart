@@ -15,7 +15,7 @@ class HomebrandBloc extends Bloc<HomebrandEvent, HomebrandState> {
     if (event.page < 2) {
       data.clear();
     }
-    var brands = await HomeAPI.brands(event.page, 2);
+    var brands = await HomeAPI.brands(event.page);
     bool _isEnd = false;
     if (brands == null) {
       _isEnd = true;

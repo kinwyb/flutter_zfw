@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:zfw/components/adapt.dart';
 import 'package:zfw/home/blocs/bloc.dart';
-import 'package:zfw/order/createOrderSizeUtil.dart';
 import '../components/api/home.dart';
 import '../components/router/routers.dart';
 import 'homeSizeUtil.dart';
@@ -18,7 +18,7 @@ class HomeCategory extends StatefulWidget {
 
 class HomeCategoryState extends State<HomeCategory> {
   final HomecategoryBloc _bloc = new HomecategoryBloc();
-  HomePageSizeUtil get homeSize => new HomePageSizeUtil();
+  HomePageSizeUtil get homeSize => getHomePageSizeUtil();
 
   @override
   void initState() {
@@ -66,7 +66,7 @@ class HomeCategoryState extends State<HomeCategory> {
 
 @immutable
 class _CategoryIcon extends StatelessWidget {
-  HomePageSizeUtil get homeSize => new HomePageSizeUtil();
+  HomePageSizeUtil get homeSize => getHomePageSizeUtil();
   final IndexCategory category;
 
   final bool showList;
@@ -82,7 +82,7 @@ class _CategoryIcon extends StatelessWidget {
           _buildIcon(),
           Text(
             this.category.Name,
-            style: defaultFontText,
+            style: defaultFontTextStyle,
           ),
         ],
       ),

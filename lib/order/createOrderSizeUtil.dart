@@ -2,11 +2,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:zfw/components/adapt.dart';
 
-final borderRadiusCircular = BorderRadius.circular(50);
-final defaultFontText = TextStyle(
-  fontSize: Adapt.px(28),
-);
-final defaultIconSize = Adapt.px(36);
+CreateOrderSizeUtil _createOrderSizeUtil;
+
+CreateOrderSizeUtil getCreateOrderSizeUtil() {
+//  if(_createOrderSizeUtil == null) {
+  _createOrderSizeUtil = new CreateOrderSizeUtil();
+//  }
+  return _createOrderSizeUtil;
+}
 
 // 尺寸大小类
 class CreateOrderSizeUtil {
@@ -60,7 +63,7 @@ class CreateOrderSizeUtil {
       right: Adapt.px(40));
   var shopNamePadding = EdgeInsets.only(bottom: Adapt.px(20));
   final shopProductNameTextStyle = TextStyle(
-    fontSize: Adapt.px(32),
+    fontSize: Adapt.px(30),
     fontWeight: FontWeight.bold,
   );
   final shopProductHeight = Adapt.px(220);

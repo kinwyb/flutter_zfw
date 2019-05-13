@@ -71,8 +71,13 @@ void _registerHome() {
         }
         return new WebviewScaffold(
           url: url,
+          userAgent:
+              "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/62.0.3202.94 Mobile Safari/537.36",
+          withLocalStorage: true,
+          hidden: true,
           appBar: new AppBar(
-            title: new Text("Widget webview"),
+            centerTitle: true,
+            title: new Text("登录"),
           ),
         );
       },
@@ -226,7 +231,12 @@ void _registerOrder() {
     "/order/create",
     handler: Handler(
       handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-        return new OrderCreate();
+        int from = params["from"]?.first != null
+            ? int.parse(params["from"]?.first)
+            : 0;
+        return new OrderCreate(
+          from: OrderFrom.values[from],
+        );
       },
     ),
     transitionType: TransitionType.inFromRight,
@@ -237,8 +247,9 @@ void orderListNavigate(BuildContext context, int orderState) {
   navigateTo(context, "/order/list?orderState=" + orderState.toString());
 }
 
-void orderCreateNavigate(BuildContext context) {
-  navigateTo(context, "/order/create");
+void orderCreateNavigate(BuildContext context,
+    [OrderFrom from = OrderFrom.DirectBuy]) {
+  navigateTo(context, "/order/create?from=" + from.index.toString());
 }
 
 void webViewNavigate(BuildContext context, String url) {

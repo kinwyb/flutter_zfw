@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:zfw/components/adapt.dart';
-import 'package:zfw/order/createOrderSizeUtil.dart';
 import '../components/api/beans/home.dart';
 import '../components/router/routers.dart';
 import 'homeSizeUtil.dart';
@@ -43,7 +42,7 @@ class HomeBrand extends StatelessWidget {
                         Center(
                             child: Text(
                           this.brand.Name,
-                          style: defaultFontText,
+                          style: defaultFontTextStyle,
                         )),
                       ],
                     ),
@@ -61,7 +60,7 @@ class HomeBrand extends StatelessWidget {
                     color: Colors.yellow,
                     child: Text(
                       '更多',
-                      style: defaultFontText,
+                      style: defaultFontTextStyle,
                     ),
                   ),
                 ),
@@ -106,7 +105,7 @@ class _BrandProducts extends StatefulWidget {
 class _BrandProductsState extends State<_BrandProducts> {
   IndexBrandProduct product;
   int productsLength;
-  HomePageSizeUtil get homeSize => new HomePageSizeUtil();
+  HomePageSizeUtil get homeSize => getHomePageSizeUtil();
 
   _BrandProductsState(this.product, this.productsLength);
 
@@ -138,7 +137,7 @@ class _BrandProductsState extends State<_BrandProducts> {
 // 商品详情
 class _BrandProductDetail extends StatelessWidget {
   final IndexBrandProduct product;
-  HomePageSizeUtil get homeSize => new HomePageSizeUtil();
+  HomePageSizeUtil get homeSize => getHomePageSizeUtil();
 
   _BrandProductDetail({Key key, this.product}) : super(key: key);
 
@@ -194,7 +193,7 @@ class _BrandProductDetail extends StatelessWidget {
 class _BrandProductPrice extends StatelessWidget {
   final String price;
   final double markPrice;
-  HomePageSizeUtil get homeSize => new HomePageSizeUtil();
+  HomePageSizeUtil get homeSize => getHomePageSizeUtil();
 
   _BrandProductPrice({Key key, this.price, this.markPrice}) : super(key: key);
 
@@ -215,7 +214,7 @@ class _BrandProductPrice extends StatelessWidget {
 
 // 商品买点
 class _BrandProductSellingPoint extends StatelessWidget {
-  HomePageSizeUtil get homeSize => new HomePageSizeUtil();
+  HomePageSizeUtil get homeSize => getHomePageSizeUtil();
   final String sellingPoint;
 
   _BrandProductSellingPoint({Key key, this.sellingPoint}) : super(key: key);

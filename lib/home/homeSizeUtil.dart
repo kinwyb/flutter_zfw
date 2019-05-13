@@ -1,6 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:zfw/components/adapt.dart';
 
+HomePageSizeUtil _homePageSizeUtil;
+
+// 获取一个首页尺寸工具
+HomePageSizeUtil getHomePageSizeUtil() {
+//  if (_homePageSizeUtil == null) {
+  _homePageSizeUtil = new HomePageSizeUtil();
+//  }
+  return _homePageSizeUtil;
+}
+
 class HomePageSizeUtil {
   // 轮播图
   final bannerHeight = Adapt.px(360);

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:zfw/components/component.dart';
 import '../components/router/routers.dart';
 import './shoppingCart.dart';
@@ -23,10 +24,8 @@ class ShoppingCartApp extends StatelessWidget {
         primarySwatch: Colors.blue,
       ),
       onGenerateRoute: router.generator,
-      initialRoute: 'order/create',
-      // home: MyHomePage(title: 'Flutter Demo Home Page'),
+//      initialRoute: 'order/create',
       home: new ShoppingCartPage(),
-      // home: Activity(activityCode: "c110d2ca40ca11e9941b00163e136d45",)
     ));
   }
 }
