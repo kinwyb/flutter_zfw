@@ -7,6 +7,7 @@
 import 'package:flutter/material.dart';
 import 'package:zfw/components/router/routers.dart';
 import '../components/api/request.dart';
+import 'package:fluwx/fluwx.dart' as fluwx;
 
 @immutable
 class LoginPage extends StatefulWidget {
@@ -93,13 +94,16 @@ class _LoginPageState extends State<LoginPage> {
                       icon: Icon(item['icon'],
                           color: Theme.of(context).iconTheme.color),
                       onPressed: () {
-                        Scaffold.of(context).showSnackBar(new SnackBar(
-                          content: new Text("${item['title']}登录"),
-                          action: new SnackBarAction(
-                            label: "取消",
-                            onPressed: () {},
-                          ),
-                        ));
+                        fluwx.sendAuth(
+                            scope: "snsapi_userinfo",
+                            state: "wechat_sdk_demo_test");
+//                        Scaffold.of(context).showSnackBar(new SnackBar(
+//                          content: new Text("${item['title']}登录"),
+//                          action: new SnackBarAction(
+//                            label: "取消",
+//                            onPressed: () {},
+//                          ),
+//                        ));
                       });
                 },
               ))

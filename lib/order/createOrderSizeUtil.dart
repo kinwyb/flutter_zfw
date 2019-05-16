@@ -22,14 +22,13 @@ class CreateOrderSizeUtil {
   var topPaddingFontSize = Adapt.px(30);
 
   //地址模块
-  var addrHeight = Adapt.px(200);
   var addrPadding = EdgeInsets.fromLTRB(
       Adapt.px(40), Adapt.px(20), Adapt.px(40), Adapt.px(20));
   var addrFontText = TextStyle(
     fontSize: Adapt.px(32),
     fontWeight: FontWeight.bold,
   );
-  var addrNameMargin = EdgeInsets.only(right: Adapt.px(10));
+  var addrNamePhoneMargin = EdgeInsets.only(bottom: Adapt.px(10));
 
   //地址模块默认按钮
   var addrDefPadding =

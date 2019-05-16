@@ -418,13 +418,45 @@ class OemOrderProduct {
 }
 
 class DirectBuyResp {
+  String errmsg;
+  String err;
+  int code;
+  PageObj page;
+  DirectBuyResultData data;
+
+  DirectBuyResp({this.errmsg, this.err, this.code, this.page, this.data});
+
+  DirectBuyResp.fromJson(Map<String, dynamic> json) {
+    this.errmsg = json['errmsg'];
+    this.err = json['err'];
+    this.code = json['code'];
+    this.page = json['page'] != null ? PageObj.fromJson(json['page']) : null;
+    this.data = json['data'] != null
+        ? DirectBuyResultData.fromJson(json['data'])
+        : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['errmsg'] = this.errmsg;
+    data['err'] = this.err;
+    data['code'] = this.code;
+    if (this.page != null) {
+      data['page'] = this.page.toString();
+    }
+    data['data'] = this.data != null ? this.data.toString() : null;
+    return data;
+  }
+}
+
+class DirectBuyResultData {
   String orderNo;
   int remainingTime;
   Map<String, dynamic> payValue;
 
-  DirectBuyResp({this.orderNo, this.remainingTime, this.payValue});
+  DirectBuyResultData({this.orderNo, this.remainingTime, this.payValue});
 
-  DirectBuyResp.fromJson(Map<String, dynamic> json) {
+  DirectBuyResultData.fromJson(Map<String, dynamic> json) {
     this.payValue = json['PayValue'];
     this.orderNo = json['OrderNo'];
     this.remainingTime = json['RemainingTime'];

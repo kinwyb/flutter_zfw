@@ -5,6 +5,8 @@ import 'package:oktoast/oktoast.dart';
 import 'package:zfw/components/api/shoppingCart.dart';
 import 'package:zfw/components/component.dart';
 import 'package:zfw/components/router/routers.dart';
+import 'package:zfw/order/blocs/bloc.dart';
+import 'package:zfw/order/create.dart';
 import '../components/iconTitle.dart';
 import '../components/api/activity.dart';
 import '../components/input.dart';
@@ -44,6 +46,7 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
   Map<String, int> iconValue = Map();
   SkuTree selectedSku;
   NumInput numInput;
+  final CreateorderinitBloc _createorderinitBloc = new CreateorderinitBloc();
 
   ActivitySelectSpecState(Color backgroundColor) {
     numInput = NumInput(
@@ -51,6 +54,19 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
       backgroundColor: backgroundColor,
       minNum: 0,
     );
+    _createorderinitBloc.state.listen((state) {
+      if (state.succ) {
+        orderCreateNavigate(context, OrderFrom.DirectBuy);
+      } else if (state.msg.isNotEmpty) {
+        showToast(state.msg);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _createorderinitBloc.dispose();
   }
 
   @override
@@ -104,7 +120,7 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
   // 按钮回调
   void _selectSpecCallback(BuildContext context) async {
     if (resultValue.length < 1) {
-      Navigator.pop(context);
+      showToast("请选择正确规格数量");
       return;
     }
     if (widget.addShoppingCart) {
@@ -127,38 +143,22 @@ class ActivitySelectSpecState extends State<ActivitySelectSpec> {
       }
       Navigator.pop(context);
     } else {
-      if (orderReq == null) {
-        orderReq = ShoppingCartOrderAddReq(oem: []);
-      } else {
-        orderReq.oem.clear();
-      }
-      OemOrderAddReq oemOrder = OemOrderAddReq();
-      oemOrder.userCouponCode = null;
-      oemOrder.invoiceCode = "";
-      oemOrder.invoiceCompanyName = "";
-      oemOrder.invoiceCompanyVerifyCode = "";
-      oemOrder.invoicePersonalName = "";
-      oemOrder.memo = "";
-      oemOrder.oemName = widget.info.BrandName;
-      oemOrder.activityCode = widget.info.ActivityCode;
-      if (oemOrder.products == null) {
-        oemOrder.products = [];
-      } else {
-        oemOrder.products.clear();
-      }
+      List<ShoppingCartProduct> products = [];
       resultValue.forEach((key, val) {
-        oemOrder.products.add(OemOrderProduct(
+        products.add(ShoppingCartProduct(
           activityCode: widget.info.ActivityCode,
-          skuID: val.skuID,
-          num: val.num,
-          attr: key,
-          price: widget.info.SingleBuyPrice,
-          productImg: widget.info.Imgs?.first?.src,
+          productImage: widget.info.Imgs?.first?.src,
           productName: widget.info.Name,
+          productNo: widget.info.ProductNo,
+          skuID: val.skuID,
+          spacValue: key,
+          num: val.num,
+          price: widget.info.SingleBuyPrice,
+          oemName: widget.info.BrandName,
+          shopCode: widget.info.BrandCode,
         ));
       });
-      orderReq.oem.add(oemOrder);
-      orderCreateNavigate(context);
+      _createorderinitBloc.dispatch(CreateorderinitEvent(products));
     }
   }
 

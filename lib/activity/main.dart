@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:zfw/activity/bloc.dart';
+import 'package:zfw/activity/blocs/bloc.dart';
 import 'package:zfw/components/adapt.dart';
 import '../components/api/activity.dart';
 import '../components/api/beans/common.dart';

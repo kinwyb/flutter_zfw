@@ -2,28 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:zfw/components/component.dart' as prefix0;
 import '../components/api/user.dart';
 import '../components/component.dart';
-
-const _itemRowBoxDecoration = BoxDecoration(
-  color: Colors.white,
-  border: Border(
-    bottom: BorderSide(width: 1, color: Colors.grey),
-  ),
-);
-const _myFansCountTextStyle = TextStyle(fontSize: 20);
-const _topTextTextStyle = TextStyle(
-  fontSize: 18,
-  fontWeight: FontWeight.bold,
-);
-const _priceTextStyle = TextStyle(
-  color: Colors.red,
-  fontSize: 16,
-  fontWeight: FontWeight.bold,
-  height: 1.2,
-);
-const _helpTitleTextStyle = TextStyle(
-  color: Colors.red,
-  fontSize: 18,
-);
+import 'homeHeadSizeUtil.dart';
 
 class HomeHeadPage extends StatefulWidget {
   @override
@@ -31,11 +10,12 @@ class HomeHeadPage extends StatefulWidget {
 }
 
 class _HomeHeadPageState extends State<HomeHeadPage>
-    with SingleTickerProviderStateMixin {
+    with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   bool _showRecommend = false;
 
   UserRebateInfo rebateInfo;
   UserFansInfo fansInfo;
+  HomeHeadSizeUtil get _size => getHomeHeadSizeUtil();
 
   @override
   void initState() {
@@ -51,9 +31,11 @@ class _HomeHeadPageState extends State<HomeHeadPage>
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('当家'),
+        automaticallyImplyLeading: false,
       ),
       body: loading(context, fansInfo == null && rebateInfo == null, (context) {
         return ListView.builder(
@@ -61,7 +43,6 @@ class _HomeHeadPageState extends State<HomeHeadPage>
           itemCount: 7,
         );
       }),
-      bottomNavigationBar: bottomNavigationBar(context),
     );
   }
 
@@ -87,8 +68,7 @@ class _HomeHeadPageState extends State<HomeHeadPage>
   Widget _topCard(BuildContext context) {
     return Container(
       color: Colors.yellow,
-      padding: EdgeInsets.fromLTRB(20, 30, 20, 0),
-      height: 200,
+      padding: EdgeInsets.fromLTRB(20, 10, 20, 0),
       child: Card(
         color: Colors.white,
         elevation: 5,
@@ -96,12 +76,15 @@ class _HomeHeadPageState extends State<HomeHeadPage>
           borderRadius: BorderRadius.all(Radius.circular(20)),
         ),
         child: Container(
-          padding: EdgeInsets.fromLTRB(20, 25, 20, 10),
-          child: Column(
+          padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+          child: Wrap(
             children: <Widget>[
-              Text(
-                '当家佣金',
-                style: _topTextTextStyle,
+              Container(
+                alignment: Alignment.center,
+                child: Text(
+                  '当家佣金',
+                  style: _size.topTextTextStyle,
+                ),
               ),
               Container(
                 child: Row(
@@ -117,53 +100,54 @@ class _HomeHeadPageState extends State<HomeHeadPage>
                   ],
                 ),
               ),
-              Text(
-                '¥${rebateInfo.waitSettlementMoney}',
-                style: _priceTextStyle,
-              ),
-              Expanded(
-                child: Container(
-                  margin: EdgeInsets.fromLTRB(0, 10, 0, 5),
-//                  color: Colors.pink,
-                  child: Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Column(
-                          children: <Widget>[
-                            Text("今日佣金"),
-                            Text(
-                              "¥${rebateInfo.dayRebateMoney}",
-                              style: _priceTextStyle,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: <Widget>[
-                            Text("昨日佣金"),
-                            Text(
-                              "¥${rebateInfo.yestDayRebateMoney}",
-                              style: _priceTextStyle,
-                            ),
-                          ],
-                        ),
-                      ),
-                      Expanded(
-                        child: Column(
-                          children: <Widget>[
-                            Text("累计总佣金"),
-                            Text(
-                              "¥${rebateInfo.allRebateMoney}",
-                              style: _priceTextStyle,
-                            ),
-                          ],
-                        ),
-                      )
-                    ],
-                  ),
+              Container(
+                alignment: Alignment.center,
+                child: Text(
+                  '¥${rebateInfo.waitSettlementMoney}',
+                  style: _size.priceTextStyle,
                 ),
-              )
+              ),
+              Container(
+                margin: EdgeInsets.fromLTRB(0, 10, 0, 5),
+//                  color: Colors.pink,
+                child: Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Column(
+                        children: <Widget>[
+                          Text("今日佣金"),
+                          Text(
+                            "¥${rebateInfo.dayRebateMoney}",
+                            style: _size.priceTextStyle,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: <Widget>[
+                          Text("昨日佣金"),
+                          Text(
+                            "¥${rebateInfo.yestDayRebateMoney}",
+                            style: _size.priceTextStyle,
+                          ),
+                        ],
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        children: <Widget>[
+                          Text("累计总佣金"),
+                          Text(
+                            "¥${rebateInfo.allRebateMoney}",
+                            style: _size.priceTextStyle,
+                          ),
+                        ],
+                      ),
+                    )
+                  ],
+                ),
+              ),
             ],
           ),
         ),
@@ -179,7 +163,7 @@ class _HomeHeadPageState extends State<HomeHeadPage>
       child: Container(
         height: 40,
         alignment: Alignment.centerLeft,
-        decoration: _itemRowBoxDecoration,
+        decoration: _size.itemRowBoxDecoration,
 //        color: Colors.green,
 //      margin: EdgeInsets.fromLTRB(0, 0, 0, 20),
         padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
@@ -206,7 +190,7 @@ class _HomeHeadPageState extends State<HomeHeadPage>
     return onTap(Container(
       height: 100,
 //      color: Colors.green,
-      decoration: _itemRowBoxDecoration,
+      decoration: _size.itemRowBoxDecoration,
       child: Column(
         children: <Widget>[
           Container(
@@ -240,7 +224,7 @@ class _HomeHeadPageState extends State<HomeHeadPage>
                   padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
                   child: Text(
                     "${fansInfo.fansCount}人",
-                    style: _myFansCountTextStyle,
+                    style: _size.myFansCountTextStyle,
                   ),
                 ),
                 Expanded(
@@ -364,7 +348,7 @@ class _HomeHeadPageState extends State<HomeHeadPage>
                     margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
                     child: Text(
                       '我的粉丝说明',
-                      style: _helpTitleTextStyle,
+                      style: _size.helpTitleTextStyle,
                     ),
                   ),
                   Container(
@@ -398,7 +382,7 @@ class _HomeHeadPageState extends State<HomeHeadPage>
                   margin: EdgeInsets.fromLTRB(0, 0, 0, 10),
                   child: Text(
                     '待结算佣金说明',
-                    style: _helpTitleTextStyle,
+                    style: _size.helpTitleTextStyle,
                   ),
                 ),
                 Container(
@@ -415,4 +399,7 @@ class _HomeHeadPageState extends State<HomeHeadPage>
       },
     );
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

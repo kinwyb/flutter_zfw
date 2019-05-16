@@ -1,40 +1,142 @@
+import 'package:bloc/bloc.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zfw/components/component.dart';
 import './home/main.dart';
 import './components/router/routers.dart';
+import 'package:fluwx/fluwx.dart' as fluwx;
+
+import 'components/adapt.dart';
+import 'homeHead/homeHead.dart';
+import 'member/member.dart';
+import 'shoppingCart/shoppingCart.dart';
 
 void main() {
+  fluwx.register(appId: "wxdc079d97fd7b8b73");
   routerInit();
-  runApp(MyApp());
+  initData();
+  runApp(Zfw());
 }
 
-class MyApp extends StatelessWidget {
-  // This widget is the root of your application.
+class _ZfwBottomIndexEvent {
+  final int index;
+  _ZfwBottomIndexEvent(this.index);
+}
+
+class _ZfwBottomBloc extends Bloc<_ZfwBottomIndexEvent, _ZfwBottomIndexEvent> {
+  @override
+  _ZfwBottomIndexEvent get initialState => _ZfwBottomIndexEvent(0);
+
+  @override
+  Stream<_ZfwBottomIndexEvent> mapEventToState(
+    _ZfwBottomIndexEvent event,
+  ) async* {
+    yield event;
+  }
+}
+
+class Zfw extends StatefulWidget {
+  @override
+  _ZfwState createState() => _ZfwState();
+}
+
+class _ZfwState extends State<Zfw> {
+  // 界面
+  List<Widget> _pages = [
+    HomeWidget(),
+    HomeHeadPage(),
+    ShoppingCartPage(),
+    MemberPage()
+  ];
+
+  final _ZfwBottomBloc _bloc = new _ZfwBottomBloc();
+  final PageController _pageController = PageController();
+
+  @override
+  void dispose() {
+    super.dispose();
+    _bloc.dispose();
+    _pageController.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
-    return toast(
-      MaterialApp(
-        title: '智纺工场',
-        debugShowCheckedModeBanner: false,
-        showPerformanceOverlay: showPerformanceOverlay,
-        theme: ThemeData(
-          // This is the theme of your application.
-          //
-          // Try running your application with "flutter run". You'll see the
-          // application has a blue toolbar. Then, without quitting the app, try
-          // changing the primarySwatch below to Colors.green and then invoke
-          // "hot reload" (press "r" in the console where you ran "flutter run",
-          // or simply save your changes to "hot reload" in a Flutter IDE).
-          // Notice that the counter didn't reset back to zero; the application
-          // is not restarted.
-          primarySwatch: Colors.blue,
-        ),
-        onGenerateRoute: router.generator,
-        // home: MyHomePage(title: 'Flutter Demo Home Page'),
-        home: new HomeWidget(),
-        // home: Activity(activityCode: "c110d2ca40ca11e9941b00163e136d45",)
+    return toast(MaterialApp(
+      title: '智纺工场',
+      debugShowCheckedModeBanner: false,
+      showPerformanceOverlay: showPerformanceOverlay,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
       ),
+      onGenerateRoute: router.generator,
+      home: Scaffold(
+        body: PageView.builder(
+          //要点1
+          physics: NeverScrollableScrollPhysics(), //禁止页面左右滑动切换
+          controller: _pageController,
+          itemCount: _pages.length,
+          itemBuilder: (context, index) => _pages[index],
+        ),
+        bottomNavigationBar: bottomNavigationBar(context),
+      ),
+    ));
+  }
+
+  int _bottomNavigationIndex = 0;
+
+  final _bottomItems = [
+    BottomNavigationBarItem(
+      icon: Icon(
+        Icons.home,
+      ),
+      title: Text('首页', style: defaultFontTextStyle),
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(
+        Icons.crop_original,
+      ),
+      title: Text('当家', style: defaultFontTextStyle),
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(
+        Icons.shopping_cart,
+      ),
+      title: Text('购物车', style: defaultFontTextStyle),
+    ),
+    BottomNavigationBarItem(
+      icon: Icon(
+        Icons.account_box,
+      ),
+      title: Text('会员', style: defaultFontTextStyle),
+    ),
+  ];
+
+// 底部导航栏
+  Widget bottomNavigationBar(BuildContext context) {
+    return BlocBuilder<_ZfwBottomIndexEvent, _ZfwBottomIndexEvent>(
+      bloc: _bloc,
+      builder: (context, state) {
+        return BottomNavigationBar(
+          iconSize: Adapt.px(46),
+          fixedColor: Colors.yellow[900],
+          currentIndex: state.index,
+          onTap: _bottomItemTap,
+          items: _bottomItems,
+          //设置显示的模式
+          type: BottomNavigationBarType.fixed,
+        );
+      },
     );
+  }
+
+  void _bottomItemTap(index) {
+    if (index == _bottomNavigationIndex) {
+      return;
+    }
+    _bottomNavigationIndex = index;
+    _pageController.animateToPage(index,
+        duration: kThemeAnimationDuration, curve: Curves.easeIn);
+    _bloc.dispatch(_ZfwBottomIndexEvent(index));
   }
 }
 

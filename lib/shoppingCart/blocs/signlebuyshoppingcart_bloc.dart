@@ -23,6 +23,14 @@ class SignlebuyshoppingcartBloc
         return;
       } else if (resp.data != null) {
         _cartData = resp.data;
+        if (_cartData != null && _cartData.shops != null) {
+          for (var c in _cartData.shops) {
+            for (var i in c.items) {
+              i.oemName = c.shopName;
+              i.shopCode = c.shopCode;
+            }
+          }
+        }
         yield SignleBuyShoppingCartLoaded(_cartData);
         return;
       }

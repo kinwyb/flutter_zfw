@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:zfw/components/adapt.dart';
 import 'package:zfw/components/api/order.dart';
 import 'package:zfw/components/component.dart';
+import 'package:zfw/order/listSizeUtil.dart';
 
 class OrderListPage extends StatefulWidget {
   final int orderState; //订单状态
@@ -12,19 +14,10 @@ class OrderListPage extends StatefulWidget {
       _OrderListPageState(orderStateParse(orderState));
 }
 
-const _tabBarTextStyle = TextStyle(
-  fontSize: 14,
-//  color: Colors.grey,
-);
-const _tabBarPaddingAll10 = EdgeInsets.all(10);
-final _tabBarIndicator = BoxDecoration(
-  color: Colors.red,
-  borderRadius: BorderRadius.circular(20),
-);
-
 class _OrderListPageState extends State<OrderListPage>
     with SingleTickerProviderStateMixin {
   TabController _tabController;
+  ListSizeUtil get _size => getListSizeUtil();
 
   _OrderListPageState([OrderState state = OrderState.All]) {
     var index = 0;
@@ -67,11 +60,11 @@ class _OrderListPageState extends State<OrderListPage>
         children: <Widget>[
           Container(
             height: 50,
-            padding: _tabBarPaddingAll10,
+            padding: _size.tabBarPadding,
             color: Colors.white,
             child: TabBar(
               controller: _tabController,
-              indicator: _tabBarIndicator,
+              indicator: _size.tabBarIndicator,
               labelPadding: EdgeInsets.zero,
               labelColor: Colors.white,
               unselectedLabelColor: Colors.grey,
@@ -87,7 +80,7 @@ class _OrderListPageState extends State<OrderListPage>
           ),
           Expanded(
             child: Container(
-              padding: EdgeInsets.fromLTRB(5, 10, 5, 0),
+              padding: _size.tabViewContainerPadding,
               child: TabBarView(
                 controller: _tabController,
                 children: <Widget>[
@@ -110,7 +103,7 @@ class _OrderListPageState extends State<OrderListPage>
   Widget _tabItem(String title) {
     return Text(
       title,
-      style: _tabBarTextStyle,
+      style: _size.defaultFontTextStyle,
     );
   }
 }
@@ -225,161 +218,22 @@ class _OrderCard extends StatefulWidget {
   _OrderCardState createState() => _OrderCardState();
 }
 
-final _orderCartShape = RoundedRectangleBorder(
-  borderRadius: BorderRadius.all(Radius.circular(10)),
-);
-final _orderCartMargin = EdgeInsets.only(bottom: 5);
-final _orderStateMsgTextStyle = TextStyle(
-  color: Colors.red,
-);
-final _orderTopDecoration = BoxDecoration(
-//  color: Colors.amber,
-  border: Border(bottom: BorderSide(width: 0.5, color: Colors.grey)),
-);
-final _orderItemProductNameTextStyle = TextStyle(
-  fontSize: 16,
-  fontWeight: FontWeight.bold,
-);
-final _orderItemProductMargin = EdgeInsets.only(top: 10, bottom: 10);
-final _orderItemProductTitleContainerMargin = EdgeInsets.only(left: 10);
-final _orderItemProductAttrTextStyle = TextStyle(
-  color: Colors.grey,
-  fontSize: 12,
-  height: 2,
-);
-final _orderItemProductPriceIconTextStyle = TextStyle(
-  color: Colors.red,
-);
-final _orderItemProductPriceTextStyle = TextStyle(
-  color: Colors.red,
-  fontSize: 18,
-  fontWeight: FontWeight.bold,
-);
-final _orderTotalTextMargin = EdgeInsets.only(top: 10);
-final _orderButtonTextStyle = TextStyle(
-  fontSize: 12,
-);
-final _orderButtonMargin = EdgeInsets.only(left: 10);
-final _orderButtonShape = RoundedRectangleBorder(
-  side: BorderSide(
-    width: 1,
-    color: Colors.grey,
-  ),
-  borderRadius: BorderRadius.circular(20),
-);
-final _orderButtonShape2 = RoundedRectangleBorder(
-  borderRadius: BorderRadius.circular(20),
-);
-// 删除按钮
-Widget _orderDelButton(String orderNo) {
-  return Container(
-    height: 25,
-    width: 80,
-    margin: _orderButtonMargin,
-    child: RaisedButton(
-      child: Text(
-        '删除订单',
-        style: _orderButtonTextStyle,
-      ),
-      color: Colors.white,
-      shape: _orderButtonShape,
-      onPressed: () {
-        print(orderNo);
-      },
-    ),
-  );
-}
-
-// 查看物流
-Widget _orderExpressButton(String orderNo) {
-  return Container(
-    height: 25,
-    width: 80,
-    margin: _orderButtonMargin,
-    child: RaisedButton(
-      child: Text(
-        '查看物流',
-        style: _orderButtonTextStyle,
-      ),
-      shape: _orderButtonShape,
-      onPressed: () {
-        print(orderNo);
-      },
-    ),
-  );
-}
-
-// 联系客服
-Widget _orderCallButton(String orderNo) {
-  return Container(
-    height: 25,
-    width: 80,
-    margin: _orderButtonMargin,
-    child: RaisedButton(
-      child: Text(
-        '联系客服',
-        style: _orderButtonTextStyle,
-      ),
-      color: Colors.yellow[800],
-      shape: _orderButtonShape2,
-      onPressed: () {
-        print(orderNo);
-      },
-    ),
-  );
-}
-
-// 退款详情
-Widget _orderCallBackMoneyButton(String orderNo) {
-  return Container(
-    height: 25,
-    width: 80,
-    margin: _orderButtonMargin,
-    child: RaisedButton(
-      child: Text(
-        '退款详情',
-        style: _orderButtonTextStyle,
-      ),
-      color: Colors.yellow[800],
-      shape: _orderButtonShape2,
-      onPressed: () {
-        print(orderNo);
-      },
-    ),
-  );
-}
-
-// 去评价
-Widget _orderAssessButton(String orderNo) {
-  return Container(
-    height: 25,
-    width: 70,
-    margin: _orderButtonMargin,
-    child: RaisedButton(
-      child: Text(
-        '去评价',
-        style: _orderButtonTextStyle,
-      ),
-      color: Colors.yellow[800],
-      shape: _orderButtonShape2,
-      onPressed: () {
-        print(orderNo);
-      },
-    ),
-  );
-}
-
 class _OrderCardState extends State<_OrderCard> {
+  ListSizeUtil get _size => getListSizeUtil();
+
   @override
   Widget build(BuildContext context) {
     Column column = Column(
       children: <Widget>[
         Container(
-          height: 30,
-          decoration: _orderTopDecoration,
+          decoration: _size.orderTopDecoration,
+          padding: _size.orderTopContainerPadding,
           child: Row(
             children: <Widget>[
-              Text("订单编号:${widget.item.orderNo}"),
+              Text(
+                "订单编号:${widget.item.orderNo}",
+                style: _size.defaultFontTextStyle,
+              ),
               Expanded(
                 child: _orderStateMsg(),
               )
@@ -393,30 +247,31 @@ class _OrderCardState extends State<_OrderCard> {
     }
     column.children.add(Container(
       alignment: Alignment.centerRight,
-      margin: _orderTotalTextMargin,
+      margin: _size.orderTotalTextMargin,
       child: Text.rich(
         TextSpan(text: "订单总量: ", children: [
           TextSpan(
             text: "${widget.item.totalNum}",
-            style: _orderItemProductPriceIconTextStyle,
+            style: _size.orderItemProductPriceIconTextStyle,
           ),
           TextSpan(
             text: " 件   订单总额: ",
           ),
           TextSpan(
             text: widget.item.amount.toStringAsFixed(2),
-            style: _orderItemProductPriceIconTextStyle,
+            style: _size.orderItemProductPriceIconTextStyle,
           ),
         ]),
+        style: _size.defaultFontTextStyle,
       ),
     ));
     column.children.add(_orderButton());
     return Container(
-      margin: _orderCartMargin,
+      margin: _size.orderCartMargin,
       child: Card(
-        shape: _orderCartShape,
+        shape: _size.orderCartShape,
         child: Container(
-          padding: _tabBarPaddingAll10,
+          padding: _size.tabBarPadding,
           child: column,
         ),
       ),
@@ -427,9 +282,10 @@ class _OrderCardState extends State<_OrderCard> {
   Widget _orderStateMsg() {
     return Container(
       alignment: Alignment.centerRight,
+      padding: _size.orderCartStateMsgContanierMargin,
       child: Text(
         "${widget.item.statusMsg}",
-        style: _orderStateMsgTextStyle,
+        style: _size.orderStateMsgTextStyle.merge(_size.defaultFontTextStyle),
       ),
     );
   }
@@ -455,8 +311,7 @@ class _OrderCardState extends State<_OrderCard> {
       row.children.add(_orderCallButton(widget.item.orderNo));
     }
     return Container(
-      height: 30,
-      margin: _orderTotalTextMargin,
+      margin: _size.orderTotalTextMargin,
       child: row,
     );
   }
@@ -469,20 +324,20 @@ class _OrderCardState extends State<_OrderCard> {
     }
     attr = attr.trim();
     return Container(
-      height: 100,
-      margin: _orderItemProductMargin,
+      height: _size.orderItemProductContainerHeight,
+      margin: _size.orderItemProductMargin,
       child: Row(
         children: <Widget>[
           Image.network(product.productImg),
           Expanded(
             child: Container(
-              margin: _orderItemProductTitleContainerMargin,
+              margin: _size.orderItemProductTitleContainerMargin,
               child: Column(
                 children: <Widget>[
                   Container(
                     child: Text(
                       product.productName,
-                      style: _orderItemProductNameTextStyle,
+                      style: _size.orderItemProductNameTextStyle,
                       maxLines: 2,
                     ),
                     alignment: Alignment.centerLeft,
@@ -491,7 +346,7 @@ class _OrderCardState extends State<_OrderCard> {
                     child: Container(
                       child: Text(
                         attr,
-                        style: _orderItemProductAttrTextStyle,
+                        style: _size.orderItemProductAttrTextStyle,
                       ),
                       alignment: Alignment.centerLeft,
                     ),
@@ -503,14 +358,15 @@ class _OrderCardState extends State<_OrderCard> {
                         children: [
                           TextSpan(
                             text: " ¥",
-                            style: _orderItemProductPriceIconTextStyle,
+                            style: _size.orderItemProductPriceIconTextStyle,
                           ),
                           TextSpan(
                             text: product.price.toStringAsFixed(2),
-                            style: _orderItemProductPriceTextStyle,
+                            style: _size.orderItemProductPriceTextStyle,
                           )
                         ],
                       ),
+                      style: _size.defaultFontTextStyle,
                     ),
                     alignment: Alignment.centerLeft,
                   ),
@@ -519,6 +375,100 @@ class _OrderCardState extends State<_OrderCard> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+// 删除按钮
+  Widget _orderDelButton(String orderNo) {
+    return Container(
+      height: _size.orderButtonContainerHeight,
+      margin: _size.orderButtonMargin,
+      child: RaisedButton(
+        child: Text(
+          '删除订单',
+          style: _size.defaultFontTextStyle,
+        ),
+        color: Colors.white,
+        shape: _size.orderButtonShape,
+        onPressed: () {
+          print(orderNo);
+        },
+      ),
+    );
+  }
+
+// 查看物流
+  Widget _orderExpressButton(String orderNo) {
+    return Container(
+      height: _size.orderButtonContainerHeight,
+      margin: _size.orderButtonMargin,
+      child: RaisedButton(
+        child: Text(
+          '查看物流',
+          style: _size.defaultFontTextStyle,
+        ),
+        shape: _size.orderButtonShape,
+        onPressed: () {
+          print(orderNo);
+        },
+      ),
+    );
+  }
+
+// 联系客服
+  Widget _orderCallButton(String orderNo) {
+    return Container(
+      height: _size.orderButtonContainerHeight,
+      margin: _size.orderButtonMargin,
+      child: RaisedButton(
+        child: Text(
+          '联系客服',
+          style: _size.defaultFontTextStyle,
+        ),
+        color: Colors.yellow[800],
+        shape: _size.orderButtonShape2,
+        onPressed: () {
+          print(orderNo);
+        },
+      ),
+    );
+  }
+
+// 退款详情
+  Widget _orderCallBackMoneyButton(String orderNo) {
+    return Container(
+      height: _size.orderButtonContainerHeight,
+      margin: _size.orderButtonMargin,
+      child: RaisedButton(
+        child: Text(
+          '退款详情',
+          style: _size.defaultFontTextStyle,
+        ),
+        color: Colors.yellow[800],
+        shape: _size.orderButtonShape2,
+        onPressed: () {
+          print(orderNo);
+        },
+      ),
+    );
+  }
+
+// 去评价
+  Widget _orderAssessButton(String orderNo) {
+    return Container(
+      height: _size.orderButtonContainerHeight,
+      margin: _size.orderButtonMargin,
+      child: RaisedButton(
+        child: Text(
+          '去评价',
+          style: _size.defaultFontTextStyle,
+        ),
+        color: Colors.yellow[800],
+        shape: _size.orderButtonShape2,
+        onPressed: () {
+          print(orderNo);
+        },
       ),
     );
   }

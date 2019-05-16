@@ -22,6 +22,7 @@ class NumInput extends StatefulWidget {
   }
 
   TextField textField;
+  double iconSize;
 
   int oldNum;
 
@@ -33,6 +34,7 @@ class NumInput extends StatefulWidget {
       this.focusNode,
       this.focusNodeValueFunc,
       this.onChangeed,
+      this.iconSize,
       this.maxNum = 65535})
       : super(key: key) {
     if (focusNode == null) {
@@ -122,7 +124,12 @@ class _NumInputState extends State<NumInput> {
               widget.controller.text = widget.text;
             }
           },
-          children: <Widget>[Icon(Icons.add_circle)],
+          children: <Widget>[
+            Icon(
+              Icons.add_circle,
+              size: widget.iconSize,
+            )
+          ],
         ),
         Expanded(
           child: Container(
@@ -145,7 +152,12 @@ class _NumInputState extends State<NumInput> {
               widget.controller.text = widget.text;
             }
           },
-          children: <Widget>[Icon(Icons.remove_circle)],
+          children: <Widget>[
+            Icon(
+              Icons.remove_circle,
+              size: widget.iconSize,
+            )
+          ],
         ),
       ],
     );

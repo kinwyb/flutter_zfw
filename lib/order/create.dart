@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -8,6 +7,7 @@ import 'package:zfw/components/component.dart';
 import 'package:zfw/components/router/routers.dart';
 import 'package:zfw/components/adapt.dart';
 import 'package:zfw/order/blocs/bloc.dart';
+import 'package:fluwx/fluwx.dart' as fluwx;
 
 import 'createOrderSizeUtil.dart';
 
@@ -17,15 +17,38 @@ enum OrderFrom {
   DirectBuy, // 直购
 }
 
-// 创建订单
-class OrderCreate extends StatelessWidget {
-  final CreateOrderSizeUtil _size = getCreateOrderSizeUtil();
-  final CreateorderbottomBloc _bottombloc = new CreateorderbottomBloc();
+class OrderCreate extends StatefulWidget {
   final OrderFrom from;
   OrderCreate({Key key, this.from = OrderFrom.DirectBuy}) : super(key: key) {
 //    String val =
 //        '{"AddrCode":null,"Oem":[{"ActivityCode":"c110d2ca40ca11e9941b00163e136d45","AddrCode":null,"InvoiceCode":"","InvoiceCompanyName":"","InvoiceCompanyVerifyCode":"","InvoicePersonalName":"","Memo":"","OemName":"北极绒制造商","Products":[{"ActivityCode":"c110d2ca40ca11e9941b00163e136d45","price":10.2,"SkuID":"aa416ba840ca11e9941b00163e136d45","Num":2,"productImg":"https://qiniu.zhifangw.cn/19030717349388963815436830.jpg?filename=QN-MTkwMzA3MTczNDkzODg5NjM4MTU0MzY4MzAuanBn","productName":"女式弹力棉修身立体职场女神内搭基础必备衬衫","attr":"白色,L","Gift":null}],"UserCouponCode":null}],"UserCouponCode":null}';
 //    orderReq = ShoppingCartOrderAddReq.fromJson(json.decode(val));
+  }
+
+  @override
+  _OrderCreateState createState() => _OrderCreateState();
+}
+
+class _OrderCreateState extends State<OrderCreate> {
+  final CreateOrderSizeUtil _size = getCreateOrderSizeUtil();
+  final CreateorderbottomBloc _bottomBloc = new CreateorderbottomBloc();
+
+  @override
+  void initState() {
+    super.initState();
+    double amount = 0.0;
+    for (var oem in orderReq.oem) {
+      for (var p in oem.products) {
+        amount += p.price * p.num;
+      }
+    }
+    _bottomBloc.dispatch(CreateorderbottomEventAmountValue(amount));
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+    _bottomBloc.dispose();
   }
 
   @override
@@ -40,29 +63,28 @@ class OrderCreate extends StatelessWidget {
         color: Colors.white,
       );
     }
-    final List<Widget> listWidgets = [_top(), _addr(context), _OrderCoupons()];
+    final List<Widget> listWidgets = [_top(), _OrderAddress(), _OrderCoupons()];
     for (var oem in orderReq.oem) {
       listWidgets.add(_OrderOem(
         data: oem,
-        bottomBloc: _bottombloc,
       ));
     }
-    listWidgets.add(_OrderLicenses(
-      bottomBloc: _bottombloc,
-    ));
-    return Scaffold(
-      appBar: AppBar(
-        title: Text("提交订单"),
-      ),
-      body: Container(
-        color: Colors.grey[200],
-        child: ListView(
-          children: listWidgets,
+    listWidgets.add(_licenses());
+    return BlocProvider<CreateorderbottomBloc>(
+      bloc: _bottomBloc,
+      child: Scaffold(
+        appBar: AppBar(
+          title: Text("提交订单"),
         ),
-      ),
-      bottomNavigationBar: _OrderCreateBottom(
-        bloc: _bottombloc,
-        from: from,
+        body: Container(
+          color: Colors.grey[200],
+          child: ListView(
+            children: listWidgets,
+          ),
+        ),
+        bottomNavigationBar: _OrderCreateBottom(
+          from: widget.from,
+        ),
       ),
     );
   }
@@ -88,86 +110,154 @@ class OrderCreate extends StatelessWidget {
     );
   }
 
-  // 地址栏
-  Widget _addr(BuildContext context) {
-    if (addrInfo == null) {
-      //todo:选择地址
-    }
-    Container def;
-    def = Container(
-      child: Text(
-        "默认",
-        style: defaultFontTextStyle,
-      ),
-      padding: _size.addrDefPadding,
-      margin: _size.addrDefMargin,
-      decoration: BoxDecoration(
-        color: Colors.amber,
-        borderRadius: borderRadiusCircular,
-      ),
-    );
+  // 协议栏
+  Widget _licenses() {
     return Container(
-      color: Colors.white,
       margin: _size.containerMargin,
-      padding: _size.addrPadding,
-      height: _size.addrHeight,
-      child: Column(
+      height: _size.shopLicensesHeight,
+      child: Row(
         children: <Widget>[
-          Expanded(
-            child: Container(
-              child: Row(
-                children: <Widget>[
-                  Expanded(
-                    child: Container(
-                      child: Text(
-                        '王五',
-                        style: _size.addrFontText,
-                        maxLines: 1,
-                      ),
-                      margin: _size.addrNameMargin,
-                    ),
-                  ),
-                  Wrap(
-                    children: <Widget>[
-                      Text(
-                        '15058679668',
-                        style: _size.addrFontText,
-                      )
-                    ],
-                  ),
-                ],
-              ),
-            ),
+          new CustomerCheckbox(
+            value: true,
+            width: _size.shopLicensesCheckBoxWidth,
+            onChanged: (val) {
+              _bottomBloc.dispatch(CreateorderbottomEventCheckBoxValue(val));
+            },
+          ),
+          Container(
+            child: onTap(
+                Text(
+                  "智纺购物协议",
+                  style: _size.shopLicensesTextStyle,
+                ), () {
+              webViewNavigate(context, "https://www.baidu.com");
+            }),
           ),
           Expanded(
-            child: Container(
-              child: Row(
-                children: <Widget>[
-                  def,
-                  Expanded(
-                    child: Container(
-                      child: Text(
-                        '浙江省义乌市苏溪镇浙江省义乌市苏溪镇浙江省义乌市苏溪镇浙江省义乌市苏溪镇浙江省义乌市苏溪镇浙江省义乌市苏溪镇',
-                        style: defaultFontTextStyle,
-                        maxLines: 2,
-                      ),
-                    ),
-                  )
-                ],
-              ),
-            ),
-          ),
+            child: Container(),
+          )
         ],
       ),
     );
   }
 }
 
+// 地址
+class _OrderAddress extends StatefulWidget {
+  @override
+  __OrderAddressState createState() => __OrderAddressState();
+}
+
+class __OrderAddressState extends State<_OrderAddress> {
+  CreateOrderSizeUtil get _size => getCreateOrderSizeUtil();
+  @override
+  Widget build(BuildContext context) {
+    Widget body;
+    if (addrInfo == null) {
+      body = Container(
+        child: Row(
+          children: <Widget>[
+            Expanded(
+              child: Text(
+                "请选择地址",
+              ),
+            ),
+            Icon(
+              Icons.arrow_forward_ios,
+              size: defaultIconSize,
+              color: Colors.grey,
+            )
+          ],
+        ),
+      );
+    } else {
+      Container def;
+      if (addrInfo.isDefault == yes) {
+        def = Container(
+          child: Text(
+            "默认",
+            style: defaultFontTextStyle,
+          ),
+          padding: _size.addrDefPadding,
+          margin: _size.addrDefMargin,
+          decoration: BoxDecoration(
+            color: Colors.amber,
+            borderRadius: borderRadiusCircular,
+          ),
+        );
+      } else {
+        def = Container();
+      }
+      body = Wrap(
+        children: <Widget>[
+          Container(
+            margin: _size.addrNamePhoneMargin,
+            child: Row(
+              children: <Widget>[
+                Expanded(
+                  child: Container(
+                    child: Text(
+                      addrInfo.contactsName,
+                      style: _size.addrFontText,
+                    ),
+                  ),
+                ),
+                Wrap(
+                  children: <Widget>[
+                    Text(
+                      addrInfo.contactsPhone,
+                      style: _size.addrFontText,
+                    )
+                  ],
+                ),
+              ],
+            ),
+          ),
+          Container(
+            child: Row(
+              children: <Widget>[
+                def,
+                Expanded(
+                  child: Container(
+                    alignment: Alignment.centerRight,
+                    child: Text(
+                      addrInfo.provinceName +
+                          addrInfo.cityName +
+                          addrInfo.districtName +
+                          addrInfo.address,
+                      style: defaultFontTextStyle,
+                    ),
+                  ),
+                )
+              ],
+            ),
+          ),
+        ],
+      );
+    }
+    return onTap(
+      Container(
+        color: Colors.white,
+        margin: _size.containerMargin,
+        padding: _size.addrPadding,
+        child: Wrap(
+          children: <Widget>[body],
+        ),
+      ),
+      () async {
+        await memberAddressNavigate(context, true);
+        if (mounted) {
+          setState(() {});
+        }
+      },
+    );
+  }
+}
+
 // 底部确认栏
 class _OrderCreateBottom extends StatefulWidget {
-  final CreateorderbottomBloc bloc;
   final OrderFrom from;
-  _OrderCreateBottom({Key key, this.bloc, this.from}) : super(key: key);
+  _OrderCreateBottom({Key key, this.from}) : super(key: key);
   @override
   _OrderCreateBottomState createState() => _OrderCreateBottomState();
 }
@@ -175,15 +265,44 @@ class _OrderCreateBottom extends StatefulWidget {
 class _OrderCreateBottomState extends State<_OrderCreateBottom> {
   CreateOrderSizeUtil get _size => getCreateOrderSizeUtil();
   bool _checkBoxValue = true;
+  CreateorderpostBloc _postBloc = new CreateorderpostBloc();
+
+  @override
+  void initState() {
+    super.initState();
+    fluwx.responseFromPayment.listen((response) {
+      print('微信支付返回:' + response.toString());
+    });
+    _postBloc.state.listen((state) {
+      if (state.isInit) {
+        return;
+      } else if (state.data.data != null && state.data.data.payValue != null) {
+        Map<String, dynamic> payinfo = state.data.data.payValue;
+        var result = fluwx.pay(
+          appId: payinfo["appId"],
+          partnerId: '1481486922',
+          prepayId: 'wx16102048029213bccead1ae80567080797',
+          packageValue: 'Sign=WXPay',
+          nonceStr: payinfo["nonceStr"],
+          timeStamp: int.parse(payinfo["timeStamp"]),
+          sign: payinfo["sign"],
+          signType: payinfo["signType"],
+        );
+        print(result.toString());
+      }
+    });
+  }
 
   @override
   void dispose() {
     super.dispose();
-    widget?.bloc?.dispose();
+    _postBloc.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    CreateorderbottomBloc _bloc =
+        BlocProvider.of<CreateorderbottomBloc>(context);
     return Container(
       height: _size.bottomHeight,
       padding: _size.bottomPadding,
@@ -196,7 +315,7 @@ class _OrderCreateBottomState extends State<_OrderCreateBottom> {
           Expanded(
             flex: 2,
             child: BlocBuilder<CreateorderbottomEvent, CreateorderbottomState>(
-              bloc: widget.bloc,
+              bloc: _bloc,
               builder: (context, state) {
                 _checkBoxValue = state.checkBoxValue;
                 return Container(
@@ -220,6 +339,12 @@ class _OrderCreateBottomState extends State<_OrderCreateBottom> {
               backgroundColor: Colors.red,
               onTap: () {
                 print('确认订单');
+                if (!_checkBoxValue) {
+                  showToast("请确认购物协议");
+                  return;
+                } else {
+                  _postBloc.dispatch(CreateorderpostEvent.DirectBuy);
+                }
               },
               children: <Widget>[
                 Padding(
@@ -243,11 +368,8 @@ class _OrderCreateBottomState extends State<_OrderCreateBottom> {
 // 店铺商品信息
 class _OrderOem extends StatelessWidget {
   static CreateOrderSizeUtil get _size => getCreateOrderSizeUtil();
-
-  final CreateorderbottomBloc bottomBloc;
-
   final OemOrderAddReq data;
-  _OrderOem({Key key, this.data, this.bottomBloc}) : super(key: key);
+  _OrderOem({Key key, this.data}) : super(key: key);
   @override
   Widget build(BuildContext context) {
     List<Widget> wgs = [
@@ -265,9 +387,6 @@ class _OrderOem extends StatelessWidget {
       wgs.add(_product(context, p));
       amount += p.price * p.num;
     }
-    bottomBloc.dispatch(CreateorderbottomEventAmountValue(
-      amount,
-    ));
     // 商品总价
     wgs.add(
       Container(
@@ -554,55 +673,6 @@ class __OrderCouponsState extends State<_OrderCoupons> {
               color: Colors.grey,
               size: defaultIconSize,
             ),
-          )
-        ],
-      ),
-    );
-  }
-}
-
-// 协议栏
-class _OrderLicenses extends StatefulWidget {
-  final CreateorderbottomBloc bottomBloc;
-  _OrderLicenses({Key key, this.bottomBloc}) : super(key: key);
-  @override
-  _OrderLicensesState createState() => _OrderLicensesState();
-}
-
-class _OrderLicensesState extends State<_OrderLicenses> {
-  CreateOrderSizeUtil get _size => getCreateOrderSizeUtil();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      margin: _size.containerMargin,
-      height: _size.shopLicensesHeight,
-      child: Row(
-        children: <Widget>[
-          BlocBuilder<CreateorderbottomEvent, CreateorderbottomState>(
-            bloc: widget.bottomBloc,
-            builder: (context, state) {
-              return new CustomerCheckbox(
-                value: state.checkBoxValue,
-                width: _size.shopLicensesCheckBoxWidth,
-                onChanged: (val) {
-                  widget.bottomBloc
-                      .dispatch(CreateorderbottomEventCheckBoxValue(val));
-                },
-              );
-            },
-          ),
-          Container(
-            child: onTap(
-                Text(
-                  "智纺购物协议",
-                  style: _size.shopLicensesTextStyle,
-                ), () {
-              webViewNavigate(context, "https://www.baidu.com");
-            }),
-          ),
-          Expanded(
-            child: Container(),
           )
         ],
       ),

@@ -1,18 +1,12 @@
 import 'dart:core';
-import 'package:bloc/bloc.dart';
-import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:oktoast/oktoast.dart';
-import 'package:zfw/activity/sku.dart';
-import 'package:zfw/components/adapt.dart';
-import 'package:zfw/components/api/shoppingCart.dart';
 import 'package:zfw/components/component.dart';
 import '../components/api/activity.dart';
 import '../components/router/routers.dart';
 import './selectSpac.dart';
 import 'activitySizeUtil.dart';
-import 'bloc.dart';
+import 'package:zfw/activity/blocs/bloc.dart';
 
 class ActivityBottomBar extends StatefulWidget {
   final ActivityInfo info;

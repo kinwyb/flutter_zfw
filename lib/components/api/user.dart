@@ -47,4 +47,14 @@ class UserAPI {
     }
     return ret.data;
   }
+
+  static Future<List<UserAddressInfo>> addressList() async {
+    var data = await HttpUtils.request("/micro/user/address/list",
+        method: HttpUtils.GET);
+    var ret = new UserAddressListResp.fromJson(data);
+    if (ret.code == 0) {
+      return ret.data;
+    }
+    return ret.data;
+  }
 }

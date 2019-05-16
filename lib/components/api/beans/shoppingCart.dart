@@ -97,6 +97,8 @@ class ShoppingCartProduct {
   int num;
   double price;
   int stock;
+  String shopCode;
+  String oemName;
   List<ShoppingCartProduct> gift;
 
   ShoppingCartProduct(
@@ -109,6 +111,8 @@ class ShoppingCartProduct {
       this.num,
       this.price,
       this.stock,
+      this.oemName,
+      this.shopCode,
       this.gift});
 
   ShoppingCartProduct.fromJson(Map<String, dynamic> json) {
@@ -121,6 +125,8 @@ class ShoppingCartProduct {
     this.num = json['Num'];
     this.price = json['Price'];
     this.stock = json['Stock'];
+    this.oemName = json['oemName'];
+    this.shopCode = json['shopCode'];
     this.gift = (json['Gift'] as List) != null
         ? (json['Gift'] as List)
             .map((i) => ShoppingCartProduct.fromJson(i))
@@ -139,6 +145,8 @@ class ShoppingCartProduct {
     data['Num'] = this.num;
     data['Price'] = this.price;
     data['Stock'] = this.stock;
+    data['shopCode'] = this.shopCode;
+    data['oemName'] = this.oemName;
     data['Gift'] =
         this.gift != null ? this.gift.map((i) => i.toJson()).toList() : null;
     return data;

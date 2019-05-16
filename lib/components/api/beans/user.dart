@@ -490,3 +490,33 @@ class UserAddressInfo {
     return data;
   }
 }
+
+class UserAddressListResp {
+  String errmsg;
+  String err;
+  int code;
+  List<UserAddressInfo> data;
+
+  UserAddressListResp({this.errmsg, this.err, this.code, this.data});
+
+  UserAddressListResp.fromJson(Map<String, dynamic> json) {
+    this.errmsg = json['errmsg'];
+    this.err = json['err'];
+    this.code = json['code'];
+    this.data = (json['data'] as List) != null
+        ? (json['data'] as List)
+            .map((i) => UserAddressInfo.fromJson(i))
+            .toList()
+        : null;
+  }
+
+  Map<String, dynamic> toJson() {
+    final Map<String, dynamic> data = new Map<String, dynamic>();
+    data['errmsg'] = this.errmsg;
+    data['err'] = this.err;
+    data['code'] = this.code;
+    data['data'] =
+        this.data != null ? this.data.map((i) => i.toJson()).toList() : null;
+    return data;
+  }
+}

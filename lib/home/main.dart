@@ -4,9 +4,7 @@ import 'package:zfw/home/blocs/bloc.dart';
 import './banner.dart';
 import './category.dart';
 import './brand.dart';
-import '../components/api/home.dart';
 import '../components/refresh.dart';
-import '../components/bottomNavigationBar.dart';
 import 'blocs/homebrand_bloc.dart';
 
 class HomeWidget extends StatefulWidget {
@@ -14,7 +12,8 @@ class HomeWidget extends StatefulWidget {
   State<StatefulWidget> createState() => HomeWidgetState();
 }
 
-class HomeWidgetState extends State<HomeWidget> {
+class HomeWidgetState extends State<HomeWidget>
+    with AutomaticKeepAliveClientMixin {
   final HomebrandBloc _bloc = new HomebrandBloc();
   ScrollController _scrollController = ScrollController(); //listview的控制器
 
@@ -49,6 +48,7 @@ class HomeWidgetState extends State<HomeWidget> {
 
   @override
   Widget build(BuildContext context) {
+    super.build(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('智纺工场'),
@@ -83,7 +83,6 @@ class HomeWidgetState extends State<HomeWidget> {
           },
         ),
       ),
-      bottomNavigationBar: bottomNavigationBar(context),
     );
   }
 
@@ -102,4 +101,7 @@ class HomeWidgetState extends State<HomeWidget> {
     _bloc.dispose();
     _scrollController.dispose();
   }
+
+  @override
+  bool get wantKeepAlive => true;
 }

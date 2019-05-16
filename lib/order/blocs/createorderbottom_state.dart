@@ -14,8 +14,8 @@ class InitialCreateorderbottomState extends CreateorderbottomState {
 }
 
 class CreateorderbottomStateValue extends CreateorderbottomState {
-  double _amount;
-  bool _checkBoxValue;
+  final double _amount;
+  final bool _checkBoxValue;
   CreateorderbottomStateValue(this._amount, this._checkBoxValue);
 
   @override

@@ -10,6 +10,7 @@ typedef AnimationWidgetBuilder = Widget Function(
 Future<T> showModalPage<T>({
   @required BuildContext context,
   @required AnimationWidgetBuilder builder,
+  bool tapClose = true,
 }) {
   assert(context != null);
   assert(builder != null);
@@ -19,6 +20,7 @@ Future<T> showModalPage<T>({
       _ModalSheetRoute<T>(
         builder: builder,
         theme: Theme.of(context, shadowThemeOnly: true),
+        tapClose: tapClose,
         barrierLabel:
             MaterialLocalizations.of(context).modalBarrierDismissLabel,
       ));
@@ -28,6 +30,7 @@ class _ModalSheetRoute<T> extends PopupRoute<T> {
   _ModalSheetRoute({
     this.builder,
     this.theme,
+    this.tapClose = true,
     this.barrierLabel,
     RouteSettings settings,
   }) : super(settings: settings);
@@ -35,11 +38,13 @@ class _ModalSheetRoute<T> extends PopupRoute<T> {
   final AnimationWidgetBuilder builder;
   final ThemeData theme;
 
+  final bool tapClose;
+
   @override
   Duration get transitionDuration => _kBottomSheetDuration;
 
   @override
-  bool get barrierDismissible => true;
+  bool get barrierDismissible => tapClose;
 
   @override
   final String barrierLabel;
@@ -65,7 +70,9 @@ class _ModalSheetRoute<T> extends PopupRoute<T> {
     Widget bottomSheet = MediaQuery.removePadding(
       context: context,
       removeTop: true,
-      child: _ModalSheet<T>(route: this),
+      child: _ModalSheet<T>(
+        route: this,
+      ),
     );
     if (theme != null) bottomSheet = Theme(data: theme, child: bottomSheet);
     return bottomSheet;
@@ -96,23 +103,18 @@ class _ModalSheetState<T> extends State<_ModalSheet<T>> {
         routeLabel = localizations.dialogLabel;
         break;
     }
-
-    return GestureDetector(
-      excludeFromSemantics: true,
-      onTap: () => Navigator.pop(context),
-      child: AnimatedBuilder(
-        animation: widget.route.animation,
-        builder: (BuildContext context, Widget child) {
-          return Semantics(
-            scopesRoute: true,
-            namesRoute: true,
-            label: routeLabel,
-            explicitChildNodes: true,
-            child: widget.route
-                .builder(context, widget.route._animationController),
-          );
-        },
-      ),
+    return AnimatedBuilder(
+      animation: widget.route.animation,
+      builder: (BuildContext context, Widget child) {
+        return Semantics(
+          scopesRoute: true,
+          namesRoute: true,
+          label: routeLabel,
+          explicitChildNodes: true,
+          child:
+              widget.route.builder(context, widget.route._animationController),
+        );
+      },
     );
   }
 }

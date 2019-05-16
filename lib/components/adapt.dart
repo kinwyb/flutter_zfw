@@ -5,6 +5,13 @@ final borderRadiusCircular = BorderRadius.circular(50);
 final defaultFontTextStyle = TextStyle(
   fontSize: Adapt.px(28),
 );
+final whiteFontTextStyle = TextStyle(
+  color: Colors.white,
+);
+final redFontTextStyle = TextStyle(
+  color: Colors.red,
+);
+
 final defaultIconSize = Adapt.px(36);
 
 class Adapt {

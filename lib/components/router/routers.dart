@@ -2,16 +2,18 @@ import 'dart:convert';
 
 import 'package:fluro/fluro.dart';
 import 'package:flutter/material.dart';
+import 'package:zfw/homeHead/homeHead.dart';
+import 'package:zfw/member/address.dart';
+import 'package:zfw/member/addressAdd.dart';
+import 'package:zfw/member/member.dart';
 import 'package:zfw/order/create.dart';
 import 'package:flutter_webview_plugin/flutter_webview_plugin.dart';
+import 'package:zfw/shoppingCart/shoppingCart.dart';
 import '../api/request.dart';
 import '../../activity/main.dart';
 import '../../productList/main.dart';
 import '../../categorys/categoryList.dart';
-import '../../member/main.dart';
 import '../../member/login.dart';
-import '../../homeHead/main.dart';
-import '../../shoppingCart/main.dart';
 import '../../main.dart';
 import '../../order/list.dart';
 
@@ -29,6 +31,7 @@ void routerInit() {
   _registerActivity(); //活动详情页面
   _registerCategory(); //分类详情
   _registerOrder(); //订单详情
+  _registerMember(); //会员
 }
 
 //////////// 首页 //////////////
@@ -38,7 +41,7 @@ void _registerHome() {
     "/",
     handler: Handler(
       handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-        return new MyApp();
+        return new Zfw();
       },
     ),
     transitionType: TransitionType.inFromLeft,
@@ -47,7 +50,7 @@ void _registerHome() {
     "/homeHead",
     handler: Handler(
       handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-        return new HomeHeadApp();
+        return new HomeHeadPage();
       },
     ),
     transitionType: TransitionType.inFromRight,
@@ -56,7 +59,7 @@ void _registerHome() {
     "/shoppingCart",
     handler: Handler(
       handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-        return new ShoppingCartApp();
+        return new ShoppingCartPage();
       },
     ),
     transitionType: TransitionType.inFromRight,
@@ -80,15 +83,6 @@ void _registerHome() {
             title: new Text("登录"),
           ),
         );
-      },
-    ),
-    transitionType: TransitionType.inFromRight,
-  );
-  router.define(
-    "/member",
-    handler: Handler(
-      handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-        return new MemberApp();
       },
     ),
     transitionType: TransitionType.inFromRight,
@@ -135,11 +129,6 @@ Future navigateTo(BuildContext context, String path,
 // 跳转首页
 void homeNavigate(BuildContext context) {
   router.navigateTo(context, "/");
-}
-
-// 跳转会员中心
-void memberNavigate(BuildContext context) {
-  navigateTo(context, "/member");
 }
 
 // 跳转购物车
@@ -247,11 +236,64 @@ void orderListNavigate(BuildContext context, int orderState) {
   navigateTo(context, "/order/list?orderState=" + orderState.toString());
 }
 
-void orderCreateNavigate(BuildContext context,
+Future orderCreateNavigate(BuildContext context,
     [OrderFrom from = OrderFrom.DirectBuy]) {
-  navigateTo(context, "/order/create?from=" + from.index.toString());
+  return navigateTo(context, "/order/create?from=" + from.index.toString());
 }
 
 void webViewNavigate(BuildContext context, String url) {
   navigateTo(context, "/webview?url=" + base64UrlEncode(utf8.encode(url)));
+}
+
+//////////// 会员 /////////////
+
+// 注册路由
+void _registerMember() {
+  router.define(
+    "/member",
+    handler: Handler(
+      handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+        return new MemberPage();
+      },
+    ),
+    transitionType: TransitionType.inFromRight,
+  );
+  router.define(
+    "/member/address",
+    handler: Handler(
+      handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+        var from = params["fromOrder"]?.first ?? "false";
+        return new MemberAddress(
+          fromOrder: from == "true",
+        );
+      },
+    ),
+    transitionType: TransitionType.inFromRight,
+  );
+  router.define(
+    "/member/address/add",
+    handler: Handler(
+      handlerFunc: (BuildContext context, Map<String, List<String>> params) {
+        return new MemberAddressAdd();
+      },
+    ),
+    transitionType: TransitionType.inFromRight,
+  );
+}
+
+// 跳转会员中心
+void memberNavigate(BuildContext context) {
+  navigateTo(context, "/member");
+}
+
+// 跳转地址管理
+Future memberAddressNavigate(BuildContext context,
+    [bool fromOrder = false]) async {
+  return navigateTo(
+      context, "/member/address?fromOrder=" + fromOrder.toString());
+}
+
+// 跳转地址新增
+Future memberAddressAddNavigate(BuildContext context) async {
+  return navigateTo(context, "/member/address/add");
 }

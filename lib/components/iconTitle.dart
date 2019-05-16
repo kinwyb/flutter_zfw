@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
 
+import 'adapt.dart';
+
 final _redPointBoxDecoration = BoxDecoration(
   borderRadius: BorderRadius.circular(20),
   color: Colors.red,
 );
-const _redPointTextStyle = TextStyle(
+final _redPointTextStyle = TextStyle(
   color: Colors.white,
-  fontSize: 11,
+  fontSize: Adapt.px(22),
 );
 
 class IconTitle extends StatelessWidget {
@@ -93,7 +95,8 @@ class RedPoint extends StatelessWidget {
     }
     return Container(
       decoration: _redPointBoxDecoration,
-      padding: EdgeInsets.fromLTRB(5, 2, 4, 2),
+      padding: EdgeInsets.fromLTRB(
+          Adapt.px(10), Adapt.px(4), Adapt.px(8), Adapt.px(4)),
       child: Text(
         text,
         style: _redPointTextStyle,
