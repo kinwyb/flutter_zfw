@@ -41,7 +41,7 @@ void _registerHome() {
     "/",
     handler: Handler(
       handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-        return new Zfw();
+        return new MainPage(0);
       },
     ),
     transitionType: TransitionType.inFromLeft,
@@ -50,7 +50,7 @@ void _registerHome() {
     "/homeHead",
     handler: Handler(
       handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-        return new HomeHeadPage();
+        return new MainPage(1);
       },
     ),
     transitionType: TransitionType.inFromRight,
@@ -59,7 +59,7 @@ void _registerHome() {
     "/shoppingCart",
     handler: Handler(
       handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-        return new ShoppingCartPage();
+        return new MainPage(2);
       },
     ),
     transitionType: TransitionType.inFromRight,
@@ -253,7 +253,7 @@ void _registerMember() {
     "/member",
     handler: Handler(
       handlerFunc: (BuildContext context, Map<String, List<String>> params) {
-        return new MemberPage();
+        return new MainPage(3);
       },
     ),
     transitionType: TransitionType.inFromRight,

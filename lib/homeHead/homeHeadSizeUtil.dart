@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:zfw/components/adapt.dart';
+import 'package:zfw/components/component.dart';
 
 HomeHeadSizeUtil _homeHeadSizeUtil;
 
 HomeHeadSizeUtil getHomeHeadSizeUtil() {
-//  if(_homeHeadSizeUtil == null) {
-  _homeHeadSizeUtil = new HomeHeadSizeUtil();
-//  }
+  if (_homeHeadSizeUtil == null || isDebug) {
+    _homeHeadSizeUtil = new HomeHeadSizeUtil();
+  }
   return _homeHeadSizeUtil;
 }
 

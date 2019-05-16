@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:zfw/components/adapt.dart';
+import 'package:zfw/components/component.dart';
 
 MemberSizeUtil _memberSizeUtil;
 
 MemberSizeUtil getMemberSizeUtil() {
-//  if(_memberSizeUtil == null) {
-  _memberSizeUtil = new MemberSizeUtil();
-//  }
+  if (_memberSizeUtil == null || isDebug) {
+    _memberSizeUtil = new MemberSizeUtil();
+  }
   return _memberSizeUtil;
 }
 

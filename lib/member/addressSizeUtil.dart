@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:zfw/components/adapt.dart';
+import 'package:zfw/components/component.dart';
 
 AddressSizeUtil _addressSizeUtil;
 
 AddressSizeUtil getAddressSizeUtil() {
-//  if(_addressSizeUtil == null) {
-  _addressSizeUtil = new AddressSizeUtil();
-//  }
+  if (_addressSizeUtil == null || isDebug) {
+    _addressSizeUtil = new AddressSizeUtil();
+  }
   return _addressSizeUtil;
 }
 

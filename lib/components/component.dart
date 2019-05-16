@@ -13,6 +13,7 @@ export 'package:zfw/components/api/shoppingCart.dart';
 // 是否显示性能图
 final bool showPerformanceOverlay = false;
 final Duration toastDuration = Duration(seconds: 3);
+bool isDebug = true;
 final yes = 'Y';
 final no = 'N';
 
@@ -21,6 +22,7 @@ bool shoppingCartOrder = false; //购物车订单
 ShoppingCartOrderAddReq orderReq; // 订单信息
 
 void initData() async {
+  isDebug = bool.fromEnvironment("dart.vm.product") == false; //设置运行模式
   // 加载默认地址
 }
 

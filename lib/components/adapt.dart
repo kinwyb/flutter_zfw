@@ -14,24 +14,33 @@ final redFontTextStyle = TextStyle(
 
 final defaultIconSize = Adapt.px(36);
 
+MediaQueryData mediaQuery;
+double _width;
+double _height;
+double _topbarH;
+double _botbarH;
+double _pixelRatio;
+double _ratio = 0;
+
+final _uiSize = 750;
+
 class Adapt {
-  static MediaQueryData mediaQuery = MediaQueryData.fromWindow(window);
-  static double _width = mediaQuery.size.width;
-  static double _height = mediaQuery.size.height;
-  static double _topbarH = mediaQuery.padding.top;
-  static double _botbarH = mediaQuery.padding.bottom;
-  static double _pixelRatio = mediaQuery.devicePixelRatio;
-  static var _ratio;
   static init(int number) {
-    int uiwidth = number is int ? number : 750;
+    mediaQuery = MediaQueryData.fromWindow(window);
+    int uiwidth = number is int ? number : _uiSize;
+    _width = mediaQuery.size.width;
+    _height = mediaQuery.size.height;
+    _topbarH = mediaQuery.padding.top;
+    _botbarH = mediaQuery.padding.bottom;
+    _pixelRatio = mediaQuery.devicePixelRatio;
     _ratio = _width / uiwidth;
   }
 
   static px(number) {
-    if (!(_ratio is double || _ratio is int)) {
-      Adapt.init(750);
+    if (_ratio == 0 || !(_ratio is double || _ratio is int)) {
+      Adapt.init(_uiSize);
     }
-    return number * _ratio;
+    return number * (_ratio == 0 ? 0.5 : _ratio);
   }
 
   static onepx() {

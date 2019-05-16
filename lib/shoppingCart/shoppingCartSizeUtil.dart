@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:zfw/components/adapt.dart';
+import 'package:zfw/components/component.dart';
 
 ShoppingCartSizeUtil _shoppingCartSizeUtil;
 
 ShoppingCartSizeUtil getShoppingCartSizeUtil() {
-//  if(_shoppingCartSizeUtil == null) {
-  _shoppingCartSizeUtil = new ShoppingCartSizeUtil();
-//  }
+  if (_shoppingCartSizeUtil == null || isDebug) {
+    _shoppingCartSizeUtil = new ShoppingCartSizeUtil();
+  }
   return _shoppingCartSizeUtil;
 }
 

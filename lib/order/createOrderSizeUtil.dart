@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:zfw/components/adapt.dart';
+import 'package:zfw/components/component.dart';
 
 CreateOrderSizeUtil _createOrderSizeUtil;
 
 CreateOrderSizeUtil getCreateOrderSizeUtil() {
-//  if(_createOrderSizeUtil == null) {
-  _createOrderSizeUtil = new CreateOrderSizeUtil();
-//  }
+  if (_createOrderSizeUtil == null || isDebug) {
+    _createOrderSizeUtil = new CreateOrderSizeUtil();
+  }
   return _createOrderSizeUtil;
 }
 

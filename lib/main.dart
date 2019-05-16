@@ -15,7 +15,23 @@ void main() {
   fluwx.register(appId: "wxdc079d97fd7b8b73");
   routerInit();
   initData();
-  runApp(Zfw());
+  runApp(ZFW());
+}
+
+class ZFW extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return toast(MaterialApp(
+      title: '智纺工场',
+      debugShowCheckedModeBanner: false,
+      showPerformanceOverlay: showPerformanceOverlay,
+      theme: ThemeData(
+        primarySwatch: Colors.blue,
+      ),
+      onGenerateRoute: router.generator,
+      home: MainPage(0),
+    ));
+  }
 }
 
 class _ZfwBottomIndexEvent {
@@ -35,12 +51,16 @@ class _ZfwBottomBloc extends Bloc<_ZfwBottomIndexEvent, _ZfwBottomIndexEvent> {
   }
 }
 
-class Zfw extends StatefulWidget {
+class MainPage extends StatefulWidget {
+  final int _bottomNavigationIndex;
+
+  MainPage(this._bottomNavigationIndex);
+
   @override
-  _ZfwState createState() => _ZfwState();
+  _MainPageState createState() => _MainPageState();
 }
 
-class _ZfwState extends State<Zfw> {
+class _MainPageState extends State<MainPage> {
   // 界面
   List<Widget> _pages = [
     HomeWidget(),
@@ -50,7 +70,17 @@ class _ZfwState extends State<Zfw> {
   ];
 
   final _ZfwBottomBloc _bloc = new _ZfwBottomBloc();
-  final PageController _pageController = PageController();
+  PageController _pageController;
+
+  @override
+  void initState() {
+    super.initState();
+    _bottomNavigationIndex = widget._bottomNavigationIndex;
+    _pageController = PageController(
+      initialPage: widget._bottomNavigationIndex,
+    );
+    _bloc.dispatch(_ZfwBottomIndexEvent(widget._bottomNavigationIndex));
+  }
 
   @override
   void dispose() {
@@ -61,28 +91,18 @@ class _ZfwState extends State<Zfw> {
 
   @override
   Widget build(BuildContext context) {
-    return toast(MaterialApp(
-      title: '智纺工场',
-      debugShowCheckedModeBanner: false,
-      showPerformanceOverlay: showPerformanceOverlay,
-      theme: ThemeData(
-        primarySwatch: Colors.blue,
+    return Scaffold(
+      body: PageView.builder(
+        physics: NeverScrollableScrollPhysics(), //禁止页面左右滑动切换
+        controller: _pageController,
+        itemCount: _pages.length,
+        itemBuilder: (context, index) => _pages[index],
       ),
-      onGenerateRoute: router.generator,
-      home: Scaffold(
-        body: PageView.builder(
-          //要点1
-          physics: NeverScrollableScrollPhysics(), //禁止页面左右滑动切换
-          controller: _pageController,
-          itemCount: _pages.length,
-          itemBuilder: (context, index) => _pages[index],
-        ),
-        bottomNavigationBar: bottomNavigationBar(context),
-      ),
-    ));
+      bottomNavigationBar: bottomNavigationBar(context),
+    );
   }
 
-  int _bottomNavigationIndex = 0;
+  int _bottomNavigationIndex;
 
   final _bottomItems = [
     BottomNavigationBarItem(
@@ -134,8 +154,9 @@ class _ZfwState extends State<Zfw> {
       return;
     }
     _bottomNavigationIndex = index;
-    _pageController.animateToPage(index,
-        duration: kThemeAnimationDuration, curve: Curves.easeIn);
+    _pageController.jumpToPage(index);
+//    _pageController.animateToPage(index,
+//        duration: kThemeAnimationDuration, curve: Curves.easeIn);
     _bloc.dispatch(_ZfwBottomIndexEvent(index));
   }
 }

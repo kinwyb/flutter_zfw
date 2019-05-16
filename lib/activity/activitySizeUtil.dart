@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:zfw/components/adapt.dart';
+import 'package:zfw/components/component.dart';
 
 ActivitySizeUtil _activitySizeUtil;
 
 ActivitySizeUtil getActivitySizeUtil() {
-//  if(_activitySizeUtil == null) {
-  _activitySizeUtil = new ActivitySizeUtil();
-//  }
+  if (_activitySizeUtil == null || isDebug) {
+    _activitySizeUtil = new ActivitySizeUtil();
+  }
   return _activitySizeUtil;
 }
 

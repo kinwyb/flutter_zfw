@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:zfw/components/adapt.dart';
+import 'package:zfw/components/component.dart';
 
 HomePageSizeUtil _homePageSizeUtil;
 
 // 获取一个首页尺寸工具
 HomePageSizeUtil getHomePageSizeUtil() {
-//  if (_homePageSizeUtil == null) {
-  _homePageSizeUtil = new HomePageSizeUtil();
-//  }
+  if (_homePageSizeUtil == null || isDebug) {
+    _homePageSizeUtil = new HomePageSizeUtil();
+  }
   return _homePageSizeUtil;
 }
 

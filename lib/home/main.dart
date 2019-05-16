@@ -52,6 +52,7 @@ class HomeWidgetState extends State<HomeWidget>
     return Scaffold(
       appBar: AppBar(
         title: Text('智纺工场'),
+        automaticallyImplyLeading: false,
       ),
       body: RefreshIndicator(
         onRefresh: refresh,

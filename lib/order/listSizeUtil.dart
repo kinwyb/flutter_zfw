@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:zfw/components/adapt.dart';
+import 'package:zfw/components/component.dart';
 
 ListSizeUtil _listSizeUtil;
 
 ListSizeUtil getListSizeUtil() {
-//  if(_listSizeUtil == null) {
-  _listSizeUtil = new ListSizeUtil();
-//  }
+  if (_listSizeUtil == null || isDebug) {
+    _listSizeUtil = new ListSizeUtil();
+  }
   return _listSizeUtil;
 }
 
