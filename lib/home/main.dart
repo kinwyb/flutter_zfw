@@ -7,13 +7,12 @@ import './brand.dart';
 import '../components/refresh.dart';
 import 'blocs/homebrand_bloc.dart';
 
-class HomeWidget extends StatefulWidget {
+class Home extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => HomeWidgetState();
+  State<StatefulWidget> createState() => HomeState();
 }
 
-class HomeWidgetState extends State<HomeWidget>
-    with AutomaticKeepAliveClientMixin {
+class HomeState extends State<Home> with AutomaticKeepAliveClientMixin {
   final HomebrandBloc _bloc = new HomebrandBloc();
   ScrollController _scrollController = ScrollController(); //listview的控制器
 

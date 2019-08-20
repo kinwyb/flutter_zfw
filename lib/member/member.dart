@@ -42,7 +42,6 @@ class _MemberPageState extends State<MemberPage>
         itemBuilder: _item,
         itemCount: 5,
       ),
-//      bottomNavigationBar: component.bottomNavigationBar(context),
     );
   }
 
@@ -457,7 +456,6 @@ class _MemberPageState extends State<MemberPage>
                   width: _size.topContainerPortraitHeight,
                   margin: _size.topContainerPortraitMargin,
                   child: new CircleAvatar(
-                    backgroundColor: Colors.pink,
                     backgroundImage: new NetworkImage(
                         "http://fsbd.test.zhifangw.cn/v1/file/read?filename=" +
                             state.userInfo.portrait),

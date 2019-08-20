@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:zfw/components/component.dart' as prefix0;
+import 'package:zfw/homeHead/blocs/bloc.dart';
 import '../components/api/user.dart';
 import '../components/component.dart';
 import 'homeHeadSizeUtil.dart';
@@ -12,21 +14,20 @@ class HomeHeadPage extends StatefulWidget {
 class _HomeHeadPageState extends State<HomeHeadPage>
     with SingleTickerProviderStateMixin, AutomaticKeepAliveClientMixin {
   bool _showRecommend = false;
+  HomeheadBloc _bloc = new HomeheadBloc();
 
-  UserRebateInfo rebateInfo;
-  UserFansInfo fansInfo;
   HomeHeadSizeUtil get _size => getHomeHeadSizeUtil();
 
   @override
   void initState() {
     super.initState();
-    _loadData();
+    _bloc.dispatch(HomeheadEvent.Load);
   }
 
-  void _loadData() async {
-    rebateInfo = await UserAPI.rebateInfo();
-    fansInfo = await UserAPI.fansInfo();
-    setState(() {});
+  @override
+  void dispose() {
+    super.dispose();
+    _bloc.dispose();
   }
 
   @override
@@ -37,12 +38,10 @@ class _HomeHeadPageState extends State<HomeHeadPage>
         title: Text('当家'),
         automaticallyImplyLeading: false,
       ),
-      body: loading(context, fansInfo == null && rebateInfo == null, (context) {
-        return ListView.builder(
-          itemBuilder: _item,
-          itemCount: 7,
-        );
-      }),
+      body: ListView.builder(
+        itemBuilder: _item,
+        itemCount: 7,
+      ),
     );
   }
 
@@ -77,78 +76,83 @@ class _HomeHeadPageState extends State<HomeHeadPage>
         ),
         child: Container(
           padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-          child: Wrap(
-            children: <Widget>[
-              Container(
-                alignment: Alignment.center,
-                child: Text(
-                  '当家佣金',
-                  style: _size.topTextTextStyle,
-                ),
-              ),
-              Container(
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: <Widget>[
-                    Text('待结算'),
-                    onTap(
-                        Icon(
-                          Icons.help,
-                          size: 16,
-                        ),
-                        () => _rebateHelp(context)),
-                  ],
-                ),
-              ),
-              Container(
-                alignment: Alignment.center,
-                child: Text(
-                  '¥${rebateInfo.waitSettlementMoney}',
-                  style: _size.priceTextStyle,
-                ),
-              ),
-              Container(
-                margin: EdgeInsets.fromLTRB(0, 10, 0, 5),
+          child: BlocBuilder<HomeheadEvent, HomeheadState>(
+            bloc: _bloc,
+            builder: (context, state) {
+              return Wrap(
+                children: <Widget>[
+                  Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '当家佣金',
+                      style: _size.topTextTextStyle,
+                    ),
+                  ),
+                  Container(
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: <Widget>[
+                        Text('待结算'),
+                        onTap(
+                            Icon(
+                              Icons.help,
+                              size: 16,
+                            ),
+                            () => _rebateHelp(context)),
+                      ],
+                    ),
+                  ),
+                  Container(
+                    alignment: Alignment.center,
+                    child: Text(
+                      '¥${state.rebateInfo ?? state.rebateInfo.waitSettlementMoney}',
+                      style: _size.priceTextStyle,
+                    ),
+                  ),
+                  Container(
+                    margin: EdgeInsets.fromLTRB(0, 10, 0, 5),
 //                  color: Colors.pink,
-                child: Row(
-                  children: <Widget>[
-                    Expanded(
-                      child: Column(
-                        children: <Widget>[
-                          Text("今日佣金"),
-                          Text(
-                            "¥${rebateInfo.dayRebateMoney}",
-                            style: _size.priceTextStyle,
+                    child: Row(
+                      children: <Widget>[
+                        Expanded(
+                          child: Column(
+                            children: <Widget>[
+                              Text("今日佣金"),
+                              Text(
+                                "¥${state.rebateInfo ?? state.rebateInfo.dayRebateMoney}",
+                                style: _size.priceTextStyle,
+                              ),
+                            ],
                           ),
-                        ],
-                      ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: <Widget>[
+                              Text("昨日佣金"),
+                              Text(
+                                "¥${state.rebateInfo ?? state.rebateInfo.yestDayRebateMoney}",
+                                style: _size.priceTextStyle,
+                              ),
+                            ],
+                          ),
+                        ),
+                        Expanded(
+                          child: Column(
+                            children: <Widget>[
+                              Text("累计总佣金"),
+                              Text(
+                                "¥${state.rebateInfo ?? state.rebateInfo.allRebateMoney}",
+                                style: _size.priceTextStyle,
+                              ),
+                            ],
+                          ),
+                        )
+                      ],
                     ),
-                    Expanded(
-                      child: Column(
-                        children: <Widget>[
-                          Text("昨日佣金"),
-                          Text(
-                            "¥${rebateInfo.yestDayRebateMoney}",
-                            style: _size.priceTextStyle,
-                          ),
-                        ],
-                      ),
-                    ),
-                    Expanded(
-                      child: Column(
-                        children: <Widget>[
-                          Text("累计总佣金"),
-                          Text(
-                            "¥${rebateInfo.allRebateMoney}",
-                            style: _size.priceTextStyle,
-                          ),
-                        ],
-                      ),
-                    )
-                  ],
-                ),
-              ),
-            ],
+                  ),
+                ],
+              );
+            },
           ),
         ),
       ),
@@ -218,41 +222,48 @@ class _HomeHeadPageState extends State<HomeHeadPage>
             ),
           ),
           Expanded(
-            child: Row(
-              children: <Widget>[
-                Container(
-                  padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
-                  child: Text(
-                    "${fansInfo.fansCount}人",
-                    style: _size.myFansCountTextStyle,
-                  ),
-                ),
-                Expanded(
-                  flex: 2,
-                  child: Container(
-                    alignment: Alignment.centerRight,
-                    padding: EdgeInsets.fromLTRB(30, 10, 0, 0),
-                    child: Column(
-                      children: <Widget>[
-                        Text("今日"),
-                        Text("${fansInfo.todayFansCount}人"),
-                      ],
+            child: BlocBuilder<HomeheadEvent, HomeheadState>(
+              bloc: _bloc,
+              builder: (context, state) {
+                return Row(
+                  children: <Widget>[
+                    Container(
+                      padding: EdgeInsets.fromLTRB(30, 0, 0, 0),
+                      child: Text(
+                        "${state.fansInfo ?? state.fansInfo.fansCount}人",
+                        style: _size.myFansCountTextStyle,
+                      ),
                     ),
-                  ),
-                ),
-                Expanded(
-                  flex: 1,
-                  child: Container(
-                    padding: EdgeInsets.fromLTRB(30, 10, 0, 0),
-                    child: Column(
-                      children: <Widget>[
-                        Text("昨日"),
-                        Text("${fansInfo.yesterdayFansCount}人"),
-                      ],
+                    Expanded(
+                      flex: 2,
+                      child: Container(
+                        alignment: Alignment.centerRight,
+                        padding: EdgeInsets.fromLTRB(30, 10, 0, 0),
+                        child: Column(
+                          children: <Widget>[
+                            Text("今日"),
+                            Text(
+                                "${state.fansInfo ?? state.fansInfo.todayFansCount}人"),
+                          ],
+                        ),
+                      ),
                     ),
-                  ),
-                )
-              ],
+                    Expanded(
+                      flex: 1,
+                      child: Container(
+                        padding: EdgeInsets.fromLTRB(30, 10, 0, 0),
+                        child: Column(
+                          children: <Widget>[
+                            Text("昨日"),
+                            Text(
+                                "${state.fansInfo ?? state.fansInfo.yesterdayFansCount}人"),
+                          ],
+                        ),
+                      ),
+                    )
+                  ],
+                );
+              },
             ),
           )
         ],
@@ -296,39 +307,47 @@ class _HomeHeadPageState extends State<HomeHeadPage>
         ],
       ),
     );
-    column.children.add(onTap(topContainer, () {
-      _showRecommend = fansInfo.recommender == null ? false : !_showRecommend;
-      setState(() {});
-    }));
-    if (_showRecommend && fansInfo.recommender != null) {
-      column.children.add(
-        Container(
-          height: 80,
-          padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
-          color: Colors.white,
-          child: Row(
-            children: <Widget>[
+    return BlocBuilder<HomeheadEvent, HomeheadState>(
+      bloc: _bloc,
+      builder: (context, state) {
+        if (state.fansInfo != null) {
+          column.children.add(onTap(topContainer, () {
+            _showRecommend =
+                state.fansInfo.recommender == null ? false : !_showRecommend;
+            setState(() {});
+          }));
+          if (_showRecommend && state.fansInfo.recommender != null) {
+            column.children.add(
               Container(
-                child: new CircleAvatar(
-                  backgroundImage:
-                      new NetworkImage(fansInfo.recommender.portrait),
+                height: 80,
+                padding: EdgeInsets.fromLTRB(20, 10, 20, 10),
+                color: Colors.white,
+                child: Row(
+                  children: <Widget>[
+                    Container(
+                      child: new CircleAvatar(
+                        backgroundImage: new NetworkImage(
+                            state.fansInfo.recommender.portrait),
+                      ),
+                    ),
+                    Container(
+                        alignment: Alignment.centerLeft,
+                        margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
+                        child: Wrap(
+                          children: <Widget>[
+                            Text("${state.fansInfo.recommender.name}\n"
+                                "${state.fansInfo.recommender.registerTime}"),
+                          ],
+                        ))
+                  ],
                 ),
               ),
-              Container(
-                  alignment: Alignment.centerLeft,
-                  margin: EdgeInsets.fromLTRB(10, 0, 0, 0),
-                  child: Wrap(
-                    children: <Widget>[
-                      Text("${fansInfo.recommender.name}\n"
-                          "${fansInfo.recommender.registerTime}"),
-                    ],
-                  ))
-            ],
-          ),
-        ),
-      );
-    }
-    return column;
+            );
+          }
+        }
+        return column;
+      },
+    );
   }
 
   // 粉丝帮助
